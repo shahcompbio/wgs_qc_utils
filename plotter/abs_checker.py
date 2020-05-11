@@ -22,7 +22,8 @@ def check_input_is_valid(data, type_checks):
     """
     if isinstance(data, pd.DataFrame):
         data = [data[col] for col in data]
+     
     for type_check, col in zip(type_checks, data):
-        assert type_check(data.dtype)
+        assert type_check(col.dtype)
 
 
