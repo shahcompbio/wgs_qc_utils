@@ -23,3 +23,8 @@ wgs_qc_utils/plotter/test.py
 wgs_qc_utils/plotter/titan_plotting.py
 wgs_qc_utils/plotter/trinucleotide.py
 wgs_qc_utils/plotter/variant_plotting.py
+wgs_qc_utils/reader/__init__.py
+wgs_qc_utils/reader/read_breakpoint.py
+wgs_qc_utils/reader/read_remixt.py
+wgs_qc_utils/reader/read_titan.py
+wgs_qc_utils/reader/read_variant_calls.py
