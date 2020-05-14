@@ -73,11 +73,9 @@ def read_titan_vcf(f):
     
     data[["allele_1", "allele_2"]] = data.GT_norm.str.split("/", expand=True)
     #
-    data["normal_vaf"] = data.DP_norm/data.RC_norm.replace(0, 0.001)
-    data["tumour_vaf"] = data.DP_tum/data.RC_tum.replace(0, 0.001)
-    # data["normal_vaf"] = data.DP_norm/data.RC_norm
-    # data["tumour_vaf"] = data.DP_tum/data.RC_tum
-    # print(data.normal_vaf.unique())
+    data["normal_vaf"] = data.RC_norm/data.DP_norm
+    data["tumour_vaf"] = data.RC_tum/data.DP_tum
+
     return data
 
 
@@ -126,9 +124,9 @@ def parse(reader, sep):
     return [line.strip().split(sep) for line in reader
             if not line.startswith("#")]
 
-variant_file = "/Users/abramsd/work/DATA/QC/titan/Sample007_museq.vcf"
-data = read_titan_vcf(variant_file)
-import matplotlib.pyplot as plt
-plt.hist(data.normal_vaf, bins = 100)
-print(data.normal_vaf.max())
-plt.show()
+# variant_file = "/Users/abramsd/work/DATA/QC/titan/Sample007_museq.vcf"
+# data = read_titan_vcf(variant_file)
+# import matplotlib.pyplot as plt
+# plt.hist(data.normal_vaf, bins = 100)
+# print(data[data.normal_vaf > 100000][["normal_vaf", "DP_norm", "RC_norm"]])
+# plt.show()
