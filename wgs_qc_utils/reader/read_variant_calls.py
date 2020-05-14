@@ -47,7 +47,6 @@ def read_full_slow(f):
 
 
 def read_titan_vcf(f):
-    print(f)
     if f.endswith(".gz"):
         lines = parse(gzip.open(f, "rt"), "\t")
     else:
@@ -70,10 +69,14 @@ def read_titan_vcf(f):
 
     data = data.astype({'RC_norm':"float64", 'AC_norm':"float64", 'NI_norm':"float64", 'ND_norm':"float64",
        'DP_norm':"float64",   'RC_tum':"float64", 'AC_tum':"float64", 'NI_tum':"float64", 'ND_tum':"float64",
-       'DP_tum':"float64",  })
+       'DP_tum':"float64"})
     
     data[["allele_1", "allele_2"]] = data.GT_norm.str.split("/", expand=True)
 
+    data["normal_vaf"] = data.DP_norm / data.RC_norm
+    data["tumour_vaf"] = data.DP_tum / data.RC_tum
+
+    print(data.normal_vaf.unique())
     return data
 
 
