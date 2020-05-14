@@ -73,10 +73,10 @@ def read_titan_vcf(f):
     
     data[["allele_1", "allele_2"]] = data.GT_norm.str.split("/", expand=True)
 
-    data["normal_vaf"] = data.DP_norm / data.RC_norm
-    data["tumour_vaf"] = data.DP_tum / data.RC_tum
+    data["normal_vaf"] = data.DP_norm/data.RC_norm.replace(0, 0.001)
+    data["tumour_vaf"] = data.DP_tum/data.RC_tum.replace(0, 0.001)
 
-    print(data.normal_vaf.unique())
+    # print(data.normal_vaf.unique())
     return data
 
 
