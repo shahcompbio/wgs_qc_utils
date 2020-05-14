@@ -10,6 +10,7 @@ class CheckerTypes(Enum):
     INT = pd_types.is_integer_dtype
     FLOAT = pd_types.is_float_dtype
     BOOLEAN = pd_types.is_bool_dtype
+    NUMERIC = pd_types.is_numeric_dtype
 
 
 def check_input_is_valid(data, type_checks):
@@ -24,6 +25,12 @@ def check_input_is_valid(data, type_checks):
         data = [data[col] for col in data]
      
     for type_check, col in zip(type_checks, data):
-        assert type_check(col.dtype)
+        try:
+            assert type_check(col.dtype)
+        except AssertionError:
+            expected = ", ".join(str(v) for v in type_checks)
+            actual = ", ".join(str(col.dtype) for col in data)
+            raise AssertionError("\nexpected types: {}\nactual types: {}".format(expected, actual))
+
 
 

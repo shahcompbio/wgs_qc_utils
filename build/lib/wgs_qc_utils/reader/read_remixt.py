@@ -1,8 +1,7 @@
 import pandas as pd
-from matplotlib.lines import Line2D
-import numpy as np
 
-# ~~~~~~~~~~~~~~~~~~~~ code taken from Andrew McPherson ~~~~~~~~~~~~~~~~~~~~~~ #
+# ~~~~~~~~~~~~~~~~~~~~ code from Andrew McPherson ~~~~~~~~~~~~~~~~~~~~~~ #
+
 
 def read(remixt_file, sample_label):
     """
@@ -43,3 +42,25 @@ def read(remixt_file, sample_label):
     cnv_data = pd.concat(cnv_data, ignore_index=True)
     cnv_data["total_raw_e"] = cnv_data.major_raw_e + cnv_data.minor_raw_e
     return cnv_data
+
+
+def prepare_at_chrom(parsed_remixt, chrom):
+    """
+    prep copy number rdata for plotting at a chrom
+    :param remixt: parsed remixt pandas dataframe
+    :param chrom: chromosome
+    :return: remixt at chromosome
+    """
+    return parsed_remixt[parsed_remixt["chromosome"] == chrom]
+
+
+def make_for_circos(remixt, sample_id, prepped_remixt):
+    '''
+    parse in the remixt h5 file and then write it out to a csv for use in the circos plot
+    :param remixt: remixt h5 filename
+    :param sample_id: sample id
+    :param prepped_remixt: output filename
+    :return:
+    '''
+    remixt = read(remixt, sample_id)
+    remixt.to_csv(prepped_remixt, sep="\t", index=False, header=True)

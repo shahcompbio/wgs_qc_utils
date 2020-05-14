@@ -4,6 +4,31 @@ import gzip
 import numpy as np
 
 
+def prepare_at_chrom(variants, chrom, n_bins=200):
+    '''
+    prepare variants data to be plotted at a chrom
+    '''
+
+    variants = variants[variants["chr"] == str(chrom)]
+
+    return bin_frequencies(variants.pos, n_bins, variants.pos.min(),
+                           variants.pos.max())
+
+
+def bin_frequencies(locations, n_bins, start, extent):
+    '''
+    bin variant data
+    '''
+    bins = np.linspace(start, extent, n_bins)
+    digitized = np.digitize(locations, bins)
+
+    binned_loc = [locations[digitized == i].mean() for i in range(1, len(bins))]
+    n_events = [len(locations[digitized == i]) for i in range(1, len(bins))]
+
+    return pd.DataFrame({"location": binned_loc,
+                       "n_events": n_events})
+
+
 def read_consensus_csv(f):
     f = pd.read_csv(f)
     f["VAF_normal"] = f.AC_NORMAL/f.DP_NORMAL
@@ -74,6 +99,15 @@ def read(f):
     data = data.drop("normal", axis=1)
 
     return data
+
+
+def read_svs(breakpoints):
+    breakpoints = pd.read_csv(breakpoints)[["chromosome_1", "chromosome_2", "position_1", "position_2"]]
+    breakpoints = breakpoints.astype({"chromosome_1": str, "chromosome_2": str})
+
+    breakpoints = pd.DataFrame({"chr": breakpoints["chromosome_1"].append(breakpoints["chromosome_2"]),
+                                "pos": breakpoints["position_1"].append(breakpoints["position_2"])})
+    return breakpoints
 
 
 def parse(reader, sep):
