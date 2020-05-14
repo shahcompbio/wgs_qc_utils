@@ -105,12 +105,13 @@ def read(f):
 
 
 def read_svs(breakpoints):
-    breakpoints = pd.read_csv(breakpoints)[["chromosome_1", "chromosome_2", "position_1", "position_2", "rearrangement_type"]]
+    breakpoints = pd.read_csv(breakpoints)[["chromosome_1", "chromosome_2", "position_1", "position_2", "prediction_id", "rearrangement_type"]]
     breakpoints = breakpoints.astype({"chromosome_1": str, "chromosome_2": str, "rearrangement_type":str})
 
     breakpoints = pd.DataFrame({"chr": breakpoints["chromosome_1"].append(breakpoints["chromosome_2"]),
                                 "pos": breakpoints["position_1"].append(breakpoints["position_2"]),
-                                "rearrangement_type": breakpoints["rearrangement_type"].append(breakpoints["rearrangement_type"])})
+                                "rearrangement_type": breakpoints["rearrangement_type"].append(breakpoints["rearrangement_type"]),
+                                "prediction_id": breakpoints["prediction_id"].append(breakpoints["prediction_id"])})
     return breakpoints
 
 
