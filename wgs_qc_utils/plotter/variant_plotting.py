@@ -114,5 +114,5 @@ def plot_trinucleotide(snv_cn, somatic, fasta_path, sample, tmp="tmp", cn_frac=0
 
     weights = ds.which_signatures()
     # return ds, weights
-    return ds
+    return ds, weights
 
