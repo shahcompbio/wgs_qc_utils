@@ -106,8 +106,7 @@ def plot_trinucleotide(snv_cn, somatic, fasta_path, sample, tmp="tmp", cn_frac=0
     ds = DeconstructSigs(
         maf=f'{sample}',
         context_counts=context_counts,
-        hg19_fasta_path=fasta_path,
-        output_folder=os.path.join(".", tmp),
+        hg19_fasta_path=fasta_path
     )
 
     dslogger = logging.getLogger("DeconstructSigs")
@@ -115,5 +114,5 @@ def plot_trinucleotide(snv_cn, somatic, fasta_path, sample, tmp="tmp", cn_frac=0
 
     weights = ds.which_signatures()
     # return ds, weights
-    return ds.figures(weights, explanations=True)
+    return ds
 
