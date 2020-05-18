@@ -2,7 +2,9 @@ import pandas as pd
 from . import abs_checker
 import wgs_analysis.plots.snv as snv_plots
 import wgs_analysis.annotation.position as position
-
+from deconstructSigs import DeconstructSigs
+import logging
+import os
 
 def plot_bar(location, n_events, axis, name, chrom_max):
     """
@@ -87,4 +89,30 @@ def plot_rainfall(chrom, pos, axis):
 
     return axis
 
+
+def calculate_mutation_class(row):
+    subs = DeconstructSigs._standardize_subs(row['ref'], row['alt'])
+    trinuc = DeconstructSigs._standardize_trinuc(row['TC'])
+    return (trinuc[0] + '[' + subs + ']' + trinuc[2])
+
+
+def plot_trinucleotide(snv_cn, somatic, fasta_path, sample, tmp="tmp"):
+    data = somatic.merge(snv_cn[['chr', 'pos', 'frac_cn']])
+    data['mutation_class'] = data.apply(lambda row: calculate_mutation_class(row), axis=1)
+
+    context_counts = data.groupby('mutation_class').size().to_dict()
+
+    ds = DeconstructSigs(
+        maf=f'{sample}',
+        context_counts=context_counts,
+        hg19_fasta_path=fasta_path,
+        output_folder=os.path.join(".", tmp),
+    )
+
+    dslogger = logging.getLogger("DeconstructSigs")
+    dslogger.setLevel(logging.ERROR)
+
+    weights = ds.which_signatures()
+
+    return ds.figures(weights, explanations=True)
 
