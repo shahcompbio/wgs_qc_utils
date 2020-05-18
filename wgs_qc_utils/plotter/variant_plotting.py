@@ -113,6 +113,6 @@ def plot_trinucleotide(snv_cn, somatic, fasta_path, sample, tmp="tmp"):
     dslogger.setLevel(logging.ERROR)
 
     weights = ds.which_signatures()
-
+    return ds, weights
     return ds.figures(weights, explanations=True)
 
