@@ -96,11 +96,12 @@ def calculate_mutation_class(row):
     return (trinuc[0] + '[' + subs + ']' + trinuc[2])
 
 
-def plot_trinucleotide(snv_cn, somatic, fasta_path, sample, tmp="tmp"):
+def plot_trinucleotide(snv_cn, somatic, fasta_path, sample, tmp="tmp", cn_frac=0):
     data = somatic.merge(snv_cn[['chr', 'pos', 'frac_cn']])
     data['mutation_class'] = data.apply(lambda row: calculate_mutation_class(row), axis=1)
 
-    context_counts = data.groupby('mutation_class').size().to_dict()
+    # context_counts = data.groupby('mutation_class').size().to_dict()
+    context_counts = data[data.frac_cn > cn_frac].groupby('mutation_class').size().to_dict()
 
     ds = DeconstructSigs(
         maf=f'{sample}',
