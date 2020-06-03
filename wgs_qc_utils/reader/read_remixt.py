@@ -10,6 +10,8 @@ def read(remixt_file, sample_label):
     :param sample_label: label of sample inside h5
     :return: parsed pandas dataframe
     """
+    if not remixt_file:
+        return None
     cnv_data = list()
     with pd.HDFStore(remixt_file, 'r') as store:
         prefix = '/copy_number/{pred_tool}/sample_{sample_id}'.format(sample_id=sample_label,
@@ -51,6 +53,8 @@ def prepare_at_chrom(parsed_remixt, chrom):
     :param chrom: chromosome
     :return: remixt at chromosome
     """
+    if not parsed_remixt:
+        return None
     return parsed_remixt[parsed_remixt["chromosome"] == chrom]
 
 
@@ -62,5 +66,7 @@ def make_for_circos(remixt, sample_id, prepped_remixt):
     :param prepped_remixt: output filename
     :return:
     '''
+    if not remixt:
+        return None
     remixt = read(remixt, sample_id)
     remixt.to_csv(prepped_remixt, sep="\t", index=False, header=True)

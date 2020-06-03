@@ -14,6 +14,19 @@ def plot(start, major_raw, minor_raw, axis, chrom_max, logistic_y=False):
     :return: axis with plot added
     """
 
+    if not start and not major_raw and not minor_raw:
+        axis.set_ylim(0, 8)
+        axis.set_yticks(range(0, 9))
+        axis.set_xlim(0, chrom_max)
+
+        axis.grid(True, linestyle=':')
+        axis.spines['left'].set_position(('outward', 5))
+        axis.spines['bottom'].set_position(('outward', 5))
+        axis.spines['top'].set_visible(False)
+        axis.spines['right'].set_visible(False)
+
+        return axis
+
     abs_checker.check_input_is_valid([start, major_raw, minor_raw],
                                             [abs_checker.CheckerTypes.NUMERIC,
                                              abs_checker.CheckerTypes.FLOAT,
