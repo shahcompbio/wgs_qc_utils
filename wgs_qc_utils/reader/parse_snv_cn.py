@@ -3,7 +3,7 @@ import numpy as np
 
 
 def parse(snvs, remixt):
-    if not remixt:
+    if not isinstance(remixt, pd.DataFrame):
         return None
     snv_cn_table = annotate_copy_number(snvs, remixt,
                                         columns=['major', 'minor', 'total_raw_e',
