@@ -20,8 +20,14 @@ def plot(start, coverage, ylim_min, ylim_max, axis, name, chrom_max):
 
     axis.spines['top'].set_visible(False)
     axis.spines['right'].set_visible(False)
-    print("start", start, "\ncoverage", coverage)
+    import logging
+    logging.getLogger("wgs.postprocessing.tasks").warn("\n\n\n\nstart\n\n\n")
+    logging.getLogger("wgs.postprocessing.tasks").warn(start)
+    logging.getLogger("wgs.postprocessing.tasks").warn("\n\n\n\ncoverage\n")
+    logging.getLogger("wgs.postprocessing.tasks").warn(coverage)
     axis.set_xticklabels([])
+
+    
     for tic in axis.xaxis.get_major_ticks():
         tic.tick1On = tic.tick2On = False
 
