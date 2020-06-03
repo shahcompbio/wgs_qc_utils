@@ -24,6 +24,7 @@ def plot(start, major_raw, minor_raw, axis, chrom_max, logistic_y=False):
         axis.spines['bottom'].set_position(('outward', 5))
         axis.spines['top'].set_visible(False)
         axis.spines['right'].set_visible(False)
+        axis.set_ylabel("Remixt", fontsize=14, fontname="Arial")
 
         return axis
 
