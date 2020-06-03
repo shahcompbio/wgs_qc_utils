@@ -10,7 +10,9 @@ def read(coverage):
     """
 
     cov = pd.read_csv(coverage, na_values="nan",
-                           sep="\t")
+                           sep="\t", names = ["chrom", "start", "end", "sum_cov"])
+
+    cov["coverage"] = cov.sum_cov/100000
 
     cov = cov.astype({"chrom": str})
     return cov
