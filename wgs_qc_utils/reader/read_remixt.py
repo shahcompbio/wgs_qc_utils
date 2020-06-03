@@ -53,8 +53,9 @@ def prepare_at_chrom(parsed_remixt, chrom):
     :param chrom: chromosome
     :return: remixt at chromosome
     """
-    if not parsed_remixt:
+    if not isinstance(parsed_remixt, pd.DataFrame):
         return None
+
     return parsed_remixt[parsed_remixt["chromosome"] == chrom]
 
 

@@ -15,6 +15,7 @@ def read(coverage):
     cov["coverage"] = cov.sum_cov/100000
 
     cov = cov.astype({"chrom": str})
+
     return cov
 
 def prepare_at_chrom(coverage, chrom, bin=False, n_bins=200):
