@@ -4,6 +4,9 @@ from . import abs_checker
 
 def plot_scatter(pos, frac_cn, axis, logistic_y=False):
 
+    if not pos and not frac_cn:
+        return axis
+
     abs_checker.check_input_is_valid([pos, frac_cn],
                                             [abs_checker.CheckerTypes.NUMERIC,
                                              abs_checker.CheckerTypes.FLOAT])
@@ -19,6 +22,11 @@ def plot_scatter(pos, frac_cn, axis, logistic_y=False):
 
 
 def plot_hist(frac_cn, axis, logistic_y=False):
+    if not frac_cn:
+        axis.set_ylim(0, 8)
+        axis.set_ylabel("SNV density")
+        return axis
+
     abs_checker.check_input_is_valid([frac_cn],
                                             [abs_checker.CheckerTypes.FLOAT])
     if logistic_y:

@@ -3,6 +3,8 @@ import numpy as np
 
 
 def parse(snvs, remixt):
+    if not remixt:
+        return None
     snv_cn_table = annotate_copy_number(snvs, remixt,
                                         columns=['major', 'minor', 'total_raw_e',
                                                  'tumour_content', 'is_subclonal'])
@@ -11,6 +13,8 @@ def parse(snvs, remixt):
 
 
 def prepare_at_chrom(transformed_snv, chrom):
+    if not transformed_snv:
+        return None
     out = transformed_snv[transformed_snv.chr == chrom]
     out["frac_cn"] = out.frac_cn *3
     return out
