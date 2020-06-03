@@ -1,10 +1,10 @@
 import numpy as np
 from . import abs_checker
-
+import pandas as pd
 
 def plot_scatter(pos, frac_cn, axis, logistic_y=False):
 
-    if not pos and not frac_cn:
+    if not isinstance(pos, pd.Series) and not isinstance(frac_cn, pd.Series):
         return axis
 
     abs_checker.check_input_is_valid([pos, frac_cn],

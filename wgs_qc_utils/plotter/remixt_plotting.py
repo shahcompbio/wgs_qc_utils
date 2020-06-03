@@ -1,7 +1,7 @@
 from matplotlib.lines import Line2D
 import numpy as np
 from . import abs_checker
-
+import pandas as pd
 
 def plot(start, major_raw, minor_raw, axis, chrom_max, logistic_y=False):
     """
@@ -14,7 +14,7 @@ def plot(start, major_raw, minor_raw, axis, chrom_max, logistic_y=False):
     :return: axis with plot added
     """
 
-    if not start and not major_raw and not minor_raw:
+    if not isinstance(start, pd.Series) and not isinstance(major_raw, pd.Series) and not isinstance(minor_raw, pd.Series):
         axis.set_ylim(0, 8)
         axis.set_yticks(range(0, 9))
         axis.set_xlim(0, chrom_max)
