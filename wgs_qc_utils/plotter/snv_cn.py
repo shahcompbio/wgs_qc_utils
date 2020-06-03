@@ -22,7 +22,7 @@ def plot_scatter(pos, frac_cn, axis, logistic_y=False):
 
 
 def plot_hist(frac_cn, axis, logistic_y=False):
-    if not frac_cn:
+    if not isinstance(frac_cn, pd.Series):
         axis.set_ylim(0, 8)
         axis.set_ylabel("SNV density")
         return axis
