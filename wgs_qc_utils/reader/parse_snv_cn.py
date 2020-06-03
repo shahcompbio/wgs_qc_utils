@@ -13,7 +13,7 @@ def parse(snvs, remixt):
 
 
 def prepare_at_chrom(transformed_snv, chrom):
-    if not transformed_snv:
+    if not isinstance(transformed_snv, pd.DataFrame):
         return None
     out = transformed_snv[transformed_snv.chr == chrom]
     out["frac_cn"] = out.frac_cn *3
