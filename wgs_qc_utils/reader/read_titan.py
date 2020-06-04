@@ -92,5 +92,6 @@ def make_for_circos(copy_number, outfile):
 
     output = pd.concat(output)
     output = output[~output.Position.isna()]
-
+    print(outfile)
+    cc
     output.to_csv(outfile, index=False, header=True, sep="\t")
