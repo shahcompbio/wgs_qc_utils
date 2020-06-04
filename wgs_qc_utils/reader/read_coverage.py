@@ -9,12 +9,11 @@ def read(coverage):
     :return: pandas dataframe
     """
 
-    cov = pd.read_csv(coverage, na_values="nan",
-                           sep="\t", names = ["chrom", "start", "end", "sum_cov"])
+    cov = pd.read_csv(coverage, na_values="nan", sep="\t")
+    cov = cov.astype({"chrom": str, "start": "int64", "end":"int64", "sum_cov":"int64"})
 
     cov["coverage"] = cov.sum_cov/100000
 
-    cov = cov.astype({"chrom": str})
 
     return cov
 
