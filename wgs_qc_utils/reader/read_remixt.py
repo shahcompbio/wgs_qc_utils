@@ -67,7 +67,9 @@ def make_for_circos(remixt, sample_id, prepped_remixt):
     :param prepped_remixt: output filename
     :return:
     '''
+
     if not remixt:
         return None
+    print(remixt)
     remixt = read(remixt, sample_id)
     remixt.to_csv(prepped_remixt, sep="\t", index=False, header=True)
