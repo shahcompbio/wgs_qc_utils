@@ -1,3 +1,5 @@
+import matplotlib
+matplotlib.use('Agg')
 from matplotlib.lines import Line2D
 import numpy as np
 from . import abs_checker
