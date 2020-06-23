@@ -1,5 +1,7 @@
 import pandas as pd
 from . import abs_checker
+import matplotlib
+matplotlib.use('Agg')
 import wgs_analysis.plots.snv as snv_plots
 import wgs_analysis.annotation.position as position
 
