@@ -1,4 +1,6 @@
 import numpy as np
+import matplotlib
+matplotlib.use('Agg')
 from matplotlib.lines import Line2D
 from . import gene_annotation_plotting
 from . import abs_checker
