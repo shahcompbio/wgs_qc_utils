@@ -5,6 +5,7 @@ import numpy as np
 def parse(snvs, remixt):
     if not isinstance(remixt, pd.DataFrame):
         return None
+    
     snv_cn_table = annotate_copy_number(snvs, remixt,
                                         columns=['major', 'minor', 'total_raw_e',
                                                  'tumour_content', 'is_subclonal'])
@@ -16,7 +17,7 @@ def prepare_at_chrom(transformed_snv, chrom):
     if not isinstance(transformed_snv, pd.DataFrame):
         return None
     out = transformed_snv[transformed_snv.chr == chrom]
-    out["frac_cn"] = out.frac_cn *3
+    out["frac_cn"] = out.frac_cn 
     return out
 
 
