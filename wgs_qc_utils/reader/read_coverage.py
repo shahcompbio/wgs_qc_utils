@@ -2,17 +2,18 @@ import pandas as pd
 import numpy as np
 
 
-def read(coverage):
+def read(coverage, binsize):
     """
     read in coverage data
     :param coverage: coverage data
     :return: pandas dataframe
     """
 
-    cov = pd.read_csv(coverage, na_values="nan", sep="\t")
+    cov = pd.read_csv(coverage, na_values="nan", sep="\t", 
+                      names=["chrom", "start", "end", "sum_cov")
     cov = cov.astype({"chrom": str, "start": "int64", "end":"int64", "sum_cov":"int64"})
 
-    cov["coverage"] = cov.sum_cov/100000
+    cov["coverage"] = cov.sum_cov/binsize
 
 
     return cov
