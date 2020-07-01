@@ -39,7 +39,7 @@ def plot(position, log_ratio, color, axis, chrom_max, anno_genes=[]):
     axis.set_ylabel("Titan", fontsize=14, fontname="Arial")
 
     if any(anno_genes):
-        axis = gene_annotation_plotting.plot_anno_genes(anno_genes, (axis.get_ylim()[0], axis.get_ylim()[1], axis)
+        axis = gene_annotation_plotting.plot_anno_genes(anno_genes, (axis.get_ylim()[0], axis.get_ylim()[1]) axis)
 
     return axis
 
