@@ -1,3 +1,4 @@
+README.md
 setup.py
 wgs_qc_utils/__init__.py
 wgs_qc_utils/data.py
@@ -8,21 +9,17 @@ wgs_qc_utils.egg-info/top_level.txt
 wgs_qc_utils/plotter/__init__.py
 wgs_qc_utils/plotter/abs_checker.py
 wgs_qc_utils/plotter/coverage_plotting.py
-wgs_qc_utils/plotter/data.py
 wgs_qc_utils/plotter/gene_annotation_plotting.py
-wgs_qc_utils/plotter/genome_wide_plot.py
 wgs_qc_utils/plotter/ideogram_plotting.py
-wgs_qc_utils/plotter/reader.py
 wgs_qc_utils/plotter/remixt_plotting.py
 wgs_qc_utils/plotter/roh_plotting.py
 wgs_qc_utils/plotter/snv_cn.py
-wgs_qc_utils/plotter/test.py
+wgs_qc_utils/plotter/supplementary_plot.py
 wgs_qc_utils/plotter/titan_plotting.py
 wgs_qc_utils/plotter/trinucleotide.py
 wgs_qc_utils/plotter/variant_plotting.py
 wgs_qc_utils/reader/__init__.py
 wgs_qc_utils/reader/parse_snv_cn.py
-wgs_qc_utils/reader/read_breakpoint.py
 wgs_qc_utils/reader/read_coverage.py
 wgs_qc_utils/reader/read_ideogram.py
 wgs_qc_utils/reader/read_remixt.py
