@@ -38,7 +38,7 @@ def plot_trinucleotide(snv_cn, somatic, fasta_path, sample, tmp="tmp", cn_frac=0
     context_counts = data[data.frac_cn > cn_frac].groupby('mutation_class').size().to_dict()
 
     ds = DeconstructSigs(
-        maf=f'{sample}',
+        maf=sample,
         context_counts=context_counts,
         hg19_fasta_path=fasta_path
     )
