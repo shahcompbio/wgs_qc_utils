@@ -103,6 +103,34 @@ def read(f):
     return data
 
 
+def read_with_tumour(f):
+    '''
+    read in
+    '''
+    if f.endswith(".gz"):
+        lines = parse(gzip.open(f, "rt"), "\t")
+    else:
+        lines = parse(open(f), "\t")
+
+    data = pd.DataFrame(lines,
+                        columns=["chr", "pos", "id", "ref", "alt", "qual",
+                                 "filter", "info", "format", "normal", "tumour"])
+
+    data = data.astype({"pos": np.int64, "chr": str})
+
+    cols = data.format.str.split(":").tolist()[0]
+    colsn = [c + "_normal" for c in cols]
+    data[colsn] = data.normal.str.split(":", expand=True)
+    colst = [c + "_tumour" for c in cols]
+    data[colst] = data.tumour.str.split(":", expand=True)
+
+    data = data.drop("format", axis=1)
+    data = data.drop("normal", axis=1)
+    data = data.drop("tumour", axis=1)
+    return data
+
+
+
 def read_svs(breakpoints):
     breakpoints = pd.read_csv(breakpoints)[["chromosome_1", "chromosome_2", "position_1", "position_2", "prediction_id", "rearrangement_type"]]
     breakpoints = breakpoints.astype({"chromosome_1": str, "chromosome_2": str, "rearrangement_type":str})
