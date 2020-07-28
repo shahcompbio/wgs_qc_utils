@@ -114,7 +114,7 @@ def read_with_tumour(f):
 
     data = pd.DataFrame(lines,
                         columns=["chr", "pos", "id", "ref", "alt", "qual",
-                                 "filter", "info", "format", "normal", "tumour"])
+                                 "filter", "info", "format", "tumour", "normal"])
 
     data = data.astype({"pos": np.int64, "chr": str})
 
