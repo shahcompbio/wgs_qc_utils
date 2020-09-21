@@ -3,7 +3,7 @@ import matplotlib
 matplotlib.use('Agg')
 from matplotlib.lines import Line2D
 from . import gene_annotation_plotting
-from . import abs_checker
+from . import input_checker
 
 
 def plot(position, log_ratio, color, axis, chrom_max, anno_genes=[]):
@@ -14,10 +14,13 @@ def plot(position, log_ratio, color, axis, chrom_max, anno_genes=[]):
     :param axis:
     :return:
     """
-    abs_checker.check_input_is_valid([position, log_ratio, color],
-                                            [abs_checker.CheckerTypes.NUMERIC,
-                                             abs_checker.CheckerTypes.FLOAT,
-                                             abs_checker.CheckerTypes.STRING])
+    if log_ratio.empty:
+        return axis
+
+    input_checker.check_input_is_valid([position, log_ratio, color],
+                                            [input_checker.CheckerTypes.NUMERIC,
+                                             input_checker.CheckerTypes.FLOAT,
+                                             input_checker.CheckerTypes.STRING])
     axis.set_ylim(-4, 6)
     axis.set_xlim(0, chrom_max)
     axis.grid(True, linestyle=':')
@@ -27,6 +30,7 @@ def plot(position, log_ratio, color, axis, chrom_max, anno_genes=[]):
     axis.spines['right'].set_visible(False)
 
     axis.set_yticks(np.arange(-4, 6, 1))
+
     axis.set_xticks(np.arange(0, position.max() / 1000000, 25))
 
     axis.set_xticklabels([])

@@ -3,30 +3,28 @@ import numpy as np
 
 
 def parse(snvs, remixt):
-    if not isinstance(remixt, pd.DataFrame):
-        return None
     
     snv_cn_table = annotate_copy_number(snvs, remixt,
                                         columns=['major', 'minor', 'total_raw_e',
                                                  'tumour_content', 'is_subclonal'])
-    return pd.DataFrame([calculate_cellular_frequency(row)
-                         for i, row in snv_cn_table.iterrows()])
+
+    output =  pd.DataFrame([calculate_cellular_frequency(row) for i, row in snv_cn_table.iterrows()])
+    output.rename(columns={"chromosome":"chrom"})
+    return output
 
 
 def prepare_at_chrom(transformed_snv, chrom):
-    if not isinstance(transformed_snv, pd.DataFrame):
-        return None
-    out = transformed_snv[transformed_snv.chr == chrom]
-    out["frac_cn"] = out.frac_cn 
+
+    out = transformed_snv[transformed_snv.chrom == chrom]
     return out
 
 
 def annotate_copy_number(pos, seg, columns=['major', 'minor']):
     results = []
 
-    for chrom in seg['chromosome'].unique():
-        _pos = pos[pos['chr'] == chrom]
-        _seg = seg[seg['chromosome'] == chrom]
+    for chrom in seg['chrom'].unique():
+        _pos = pos[pos['chrom'] == chrom]
+        _seg = seg[seg['chrom'] == chrom]
         results.append(find_overlapping_segments(_pos, _seg, columns))
     return pd.concat(results)
 

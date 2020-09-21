@@ -4,12 +4,20 @@ import gzip
 import numpy as np
 
 
+def handle_decompression(f):
+    if f.endswith(".gz"):
+        lines = parse(gzip.open(f, "rt"), "\t")
+    else:
+        lines = parse(open(f), "\t")
+
+    return lines
+
 def prepare_at_chrom(variants, chrom, n_bins=200):
     '''
     prepare variants data to be plotted at a chrom
     '''
-
-    variants = variants[variants["chr"] == str(chrom)]
+    print(variants)
+    variants = variants[variants["chrom"] == str(chrom)]
 
     return bin_frequencies(variants.pos, n_bins, variants.pos.min(),
                            variants.pos.max())
@@ -35,11 +43,17 @@ def read_consensus_csv(f):
     f["VAF_tumor"] = f.AC_TUMOUR/f.DP_TUMOUR
     f = f.rename(columns = {"chrom":"chr"})
     f = f.astype({"chr":str})
+    f["chr"] =  f.chr.str.lower()
+    f.rename(columns={"chr":"chrom"}, inplace=True)
+
     return f
 
 
-def read_full_slow(f):
-    reader = vcf.Reader(open(f))
+def read_full_slow(f, gz=False):
+    if not gz:
+      reader = vcf.Reader(open(f))
+    if gz:
+      reader = vcf.Reader(filename=f)
     df = pd.DataFrame([vars(r) for r in reader])
     out = df.merge(pd.DataFrame(df.INFO.tolist()),
                    left_index=True, right_index=True)
@@ -75,6 +89,8 @@ def read_titan_vcf(f):
     #
     data["normal_vaf"] = data.RC_norm/data.DP_norm
     data["tumour_vaf"] = data.RC_tum/data.DP_tum
+    data["chr"] = data.chr.str.lower()
+    data.rename(columns={"chr":"chrom"}, inplace=True)
 
     return data
 
@@ -83,11 +99,7 @@ def read(f):
     '''
     read in
     '''
-    if f.endswith(".gz"):
-        lines = parse(gzip.open(f, "rt"), "\t")
-    else:
-        lines = parse(open(f), "\t")
-
+    lines = handle_decompression(f)
     data = pd.DataFrame(lines,
                         columns=["chr", "pos", "id", "ref", "alt", "qual",
                                  "filter", "info", "format", "normal"])
@@ -99,6 +111,8 @@ def read(f):
 
     data = data.drop("format", axis=1)
     data = data.drop("normal", axis=1)
+    data["chr"] = data.chr.str.lower()
+    data.rename(columns={"chr":"chrom"}, inplace=True)
 
     return data
 
@@ -111,10 +125,9 @@ def read_with_tumour(f):
         lines = parse(gzip.open(f, "rt"), "\t")
     else:
         lines = parse(open(f), "\t")
-
     data = pd.DataFrame(lines,
                         columns=["chr", "pos", "id", "ref", "alt", "qual",
-                                 "filter", "info", "format", "tumour", "normal"])
+                                 "filter", "info", "format", "a", "b", "c", "tumour", "normal"])
 
     data = data.astype({"pos": np.int64, "chr": str})
 
@@ -132,13 +145,14 @@ def read_with_tumour(f):
 
 
 def read_svs(breakpoints):
-    breakpoints = pd.read_csv(breakpoints)[["chromosome_1", "chromosome_2", "position_1", "position_2", "prediction_id", "rearrangement_type"]]
+    breakpoints = pd.read_csv(breakpoints, compression=None)[["chromosome_1", "chromosome_2", "position_1", "position_2", "prediction_id", "rearrangement_type"]]
     breakpoints = breakpoints.astype({"chromosome_1": str, "chromosome_2": str, "rearrangement_type":str})
 
     breakpoints = pd.DataFrame({"chr": breakpoints["chromosome_1"].append(breakpoints["chromosome_2"]),
                                 "pos": breakpoints["position_1"].append(breakpoints["position_2"]),
                                 "rearrangement_type": breakpoints["rearrangement_type"].append(breakpoints["rearrangement_type"]),
                                 "prediction_id": breakpoints["prediction_id"].append(breakpoints["prediction_id"])})
+    breakpoints.rename(columns={"chr":"chrom"}, inplace=True)
     return breakpoints
 
 

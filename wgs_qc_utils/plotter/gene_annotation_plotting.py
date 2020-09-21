@@ -11,7 +11,7 @@ def add_gene_annotation_legend(anno_genes, axis):
     :param axis: axis to plot on
     :return: axis with legend
     """
-
+    
     colors = anno_genes.color.tolist()
     labels = anno_genes.index.tolist()
     lines = [Line2D([0], [0], color=c, linewidth=3) for c in colors]

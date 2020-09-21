@@ -18,26 +18,25 @@ def read(copy_number):
              "#BB0000", "#CC0000", "#DD0000", "#EE0000"] + ["#FF0000"] * n_extra
 
     read["color"] = read.TITANstate.apply(lambda state: colors[state])
+    read["Chr"] = read.Chr.str.lower()
+    read.rename(columns={"Chr":"Chrom"}, inplace=True)
 
     return read
 
 
 
-def prepare_at_chrom(copy_number, chrom):
+def prepare_at_chrom(copy_number, Chrom):
     """
-    get copy number data at a chromosome
+    get copy number data at a Chromosome
     :param copy_number: read in copy number data
-    :param chrom: chromosome to extract (str)
-    :return: copy number data at chrom
+    :param Chrom: Chromosome to extract (str)
+    :return: copy number data at Chrom
     """
     '''
-    prep copy number rdata for plotting at a chrom
+    prep copy number rdata for plotting at a Chrom
     '''
 
-    if isinstance(chrom, int):
-        chrom = str(chrom)
-
-    return copy_number[copy_number["Chr"] == chrom][["Position", "LogRatio", "color"]]
+    return copy_number[copy_number["Chrom"] == Chrom][["Position", "LogRatio", "color"]]
 
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ for circos plotting ~~~~~~~~~~~~~~~~~~~ #
@@ -72,7 +71,7 @@ def bin_copy_number(copy_number, n_bins=200):
 def make_for_circos(copy_number, outfile):
     """
     prepare cn data for circos plot
-    bin the data at each chromosome, get rid of nans + unused cols
+    bin the data at each Chromosome, get rid of nans + unused cols
     :param copy_number: copy number input (titan_markers.csv.gz)
     :param outfile: output path for prepped data
     :return: prepped cn data ready to go for circos plot
@@ -80,17 +79,18 @@ def make_for_circos(copy_number, outfile):
 
     cn = read(copy_number)
 
-    chroms = cn.Chr.unique()
-    output = dict(zip(chroms, [[]] * len(chroms)))
+    Chroms = cn.Chrom.unique()
+    output = dict(zip(Chroms, [[]] * len(Chroms)))
 
-    for chrom in chroms:
-        cn_at_chrom = cn[cn.Chr == chrom]
-        out = bin_copy_number(cn_at_chrom, n_bins=200)
+    for Chrom in Chroms:
+        cn_at_Chrom = cn[cn.Chrom == Chrom]
+        out = bin_copy_number(cn_at_Chrom, n_bins=200)
 
-        out["Chr"] = [chrom] * len(out.index)
-        output[chrom] = out
+        out["Chrom"] = [Chrom] * len(out.index)
+        output[Chrom] = out
 
     output = pd.concat(output)
     output = output[~output.Position.isna()]
-
+    output = output.rename(columns = {"Chrom": "Chr"})
     output.to_csv(outfile, index=False, header=True, sep="\t")
+

@@ -43,6 +43,9 @@ def read(remixt_file, sample_label):
         cnv_data.append(cn)
     cnv_data = pd.concat(cnv_data, ignore_index=True)
     cnv_data["total_raw_e"] = cnv_data.major_raw_e + cnv_data.minor_raw_e
+    cnv_data["chromosome"] = cnv_data.chromosome.str.lower()
+    cnv_data.rename(columns={"chromosome":"chrom"}, inplace=True)
+    
     return cnv_data
 
 
@@ -53,10 +56,8 @@ def prepare_at_chrom(parsed_remixt, chrom):
     :param chrom: chromosome
     :return: remixt at chromosome
     """
-    if not isinstance(parsed_remixt, pd.DataFrame):
-        return None
 
-    return parsed_remixt[parsed_remixt["chromosome"] == chrom]
+    return parsed_remixt[parsed_remixt["chrom"] == chrom]
 
 
 def make_for_circos(remixt, sample_id, prepped_remixt):
@@ -70,6 +71,6 @@ def make_for_circos(remixt, sample_id, prepped_remixt):
 
     if not remixt:
         return None
-    print(remixt)
+
     remixt = read(remixt, sample_id)
     remixt.to_csv(prepped_remixt, sep="\t", index=False, header=True)

@@ -5,6 +5,7 @@ import numpy as np
 
 
 def plot(ideogram, axis):
+    
     xranges = ideogram[['start', 'width']].values
     colors = ideogram["color"].values
     collection = BrokenBarHCollection(xranges, (0, 1), facecolors=colors)

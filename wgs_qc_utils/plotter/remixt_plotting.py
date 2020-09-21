@@ -2,7 +2,7 @@ import matplotlib
 matplotlib.use('Agg')
 from matplotlib.lines import Line2D
 import numpy as np
-from . import abs_checker
+from . import input_checker
 import pandas as pd
 
 def plot(start, major_raw, minor_raw, axis, chrom_max, logistic_y=False):
@@ -16,7 +16,8 @@ def plot(start, major_raw, minor_raw, axis, chrom_max, logistic_y=False):
     :return: axis with plot added
     """
 
-    if not isinstance(start, pd.Series) and not isinstance(major_raw, pd.Series) and not isinstance(minor_raw, pd.Series):
+    if start.empty:
+
         axis.set_ylim(0, 8)
         axis.set_yticks(range(0, 9))
         axis.set_xlim(0, chrom_max)
@@ -30,10 +31,10 @@ def plot(start, major_raw, minor_raw, axis, chrom_max, logistic_y=False):
 
         return axis
 
-    abs_checker.check_input_is_valid([start, major_raw, minor_raw],
-                                            [abs_checker.CheckerTypes.NUMERIC,
-                                             abs_checker.CheckerTypes.FLOAT,
-                                             abs_checker.CheckerTypes.FLOAT])
+    input_checker.check_input_is_valid([start, major_raw, minor_raw],
+                                            [input_checker.CheckerTypes.NUMERIC,
+                                             input_checker.CheckerTypes.FLOAT,
+                                             input_checker.CheckerTypes.FLOAT])
 
     if logistic_y:
         squash_coeff = 0.15

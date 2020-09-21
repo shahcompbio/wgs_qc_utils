@@ -1,5 +1,5 @@
 import pandas as pd
-from . import abs_checker
+from . import input_checker
 import logging
 import os
 
@@ -14,9 +14,12 @@ def plot_bar(location, n_events, axis, name, chrom_max):
     :return:  updated axis
     """
 
-    abs_checker.check_input_is_valid([location, n_events],
-                                     [abs_checker.CheckerTypes.NUMERIC,
-                                      abs_checker.CheckerTypes.INT])
+    if n_events.empty:
+        return axis
+
+    input_checker.check_input_is_valid([location, n_events],
+                                     [input_checker.CheckerTypes.NUMERIC,
+                                      input_checker.CheckerTypes.INT])
 
     axis.set_xlim(0, chrom_max)
 
@@ -45,9 +48,9 @@ def plot_fill(location, n_events, axis, name, chrom_max):
     :param chrom_max: max of x axis
     :return:  updated axis
     '''
-    abs_checker.check_input_is_valid([location, n_events],
-                                     [abs_checker.CheckerTypes.NUMERIC,
-                                      abs_checker.CheckerTypes.INT])
+    input_checker.check_input_is_valid([location, n_events],
+                                     [input_checker.CheckerTypes.NUMERIC,
+                                      input_checker.CheckerTypes.INT])
 
     axis.set_xlim(0, chrom_max)
 

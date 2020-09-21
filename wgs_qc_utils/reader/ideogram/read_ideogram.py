@@ -1,14 +1,22 @@
 import pandas as pd
+from wgs_qc_utils.reader.ideogram import read_ideogram
+import os
+import pkg_resources
 
 
-def read(ideo_file):
-    # read things in
-    ideogram = pd.read_csv(ideo_file, sep="\t", names=["chrom", "start", "end", "name", "stain"])
-    # Colors for different chromosome stains
+def read(ideogram_file=False):
+
+    if ideogram_file == False:
+        stream = pkg_resources.resource_stream(__name__, 'ideogram.txt')
+        ideogram = pd.read_csv(stream, sep="\t", encoding='latin-1', names=["chrom", "start", "end", "name", "stain"])
+
+    else:
+        ideogram = pd.read_csv(ideogram_file, sep="\t", names=["chrom", "start", "end", "name", "stain"])
+
     ideogram = ideogram.astype({"chrom":str})
-#    ideogram["chrom"] = ideogram.chrom.str.split("chr", expand=True)[1]
     ideogram["start"] = ideogram.start/1000000
     ideogram["end"] = ideogram.end/1000000
+    ideogram["chrom"] = ideogram.chrom.str.lower()
 
     color_lookup = {
         'gneg': [1., 1., 1.],
@@ -20,7 +28,7 @@ def read(ideo_file):
         'gvar': [.8, .8, .8],
         'stalk': [.9, .9, .9]
     }
-
+    print(ideogram)
     ideogram["color"] = ideogram.stain.apply(lambda x: color_lookup[x])
     ideogram['width'] = ideogram.end - ideogram.start
 

@@ -1,15 +1,15 @@
 import numpy as np
-from . import abs_checker
+from . import input_checker
 import pandas as pd
 
 def plot_scatter(pos, frac_cn, axis, logistic_y=False):
 
-    if not isinstance(pos, pd.Series) and not isinstance(frac_cn, pd.Series):
+    if frac_cn.empty:
         return axis
 
-    abs_checker.check_input_is_valid([pos, frac_cn],
-                                            [abs_checker.CheckerTypes.NUMERIC,
-                                             abs_checker.CheckerTypes.FLOAT])
+    input_checker.check_input_is_valid([pos, frac_cn],
+                                            [input_checker.CheckerTypes.NUMERIC,
+                                             input_checker.CheckerTypes.FLOAT])
 
     if logistic_y:
         squash_coeff = 0.15
@@ -22,13 +22,13 @@ def plot_scatter(pos, frac_cn, axis, logistic_y=False):
 
 
 def plot_hist(frac_cn, axis, logistic_y=False):
-    if not isinstance(frac_cn, pd.Series):
+    if frac_cn.empty:
         axis.set_ylim(0, 8)
         axis.set_ylabel("SNV density")
         return axis
 
-    abs_checker.check_input_is_valid([frac_cn],
-                                            [abs_checker.CheckerTypes.FLOAT])
+    input_checker.check_input_is_valid([frac_cn],
+                                            [input_checker.CheckerTypes.FLOAT])
     if logistic_y:
         squash_coeff = 0.15
         squash_f = lambda a: np.tanh(squash_coeff * a)

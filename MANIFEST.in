@@ -1,2 +1,3 @@
 include versioneer.py
 include wgs_qc_utils/_version.py
+include wgs_qc_utils/wgs_qc_utils/readers/ideogram/ideogram.txt

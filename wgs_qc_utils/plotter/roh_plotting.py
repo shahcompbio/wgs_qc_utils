@@ -1,4 +1,4 @@
-from . import abs_checker
+from . import input_checker
 
 
 def plot(pos, state, axis, chrom_max):
@@ -8,9 +8,14 @@ def plot(pos, state, axis, chrom_max):
     :param axis: axis to plot on
     :return: axis with plot
     """
-    abs_checker.check_input_is_valid([pos, state],
-                                            [abs_checker.CheckerTypes.NUMERIC,
-                                             abs_checker.CheckerTypes.NUMERIC])
+
+
+    if state.empty:
+        return axis
+        
+    input_checker.check_input_is_valid([pos, state],
+                                            [input_checker.CheckerTypes.NUMERIC,
+                                             input_checker.CheckerTypes.NUMERIC])
 
     axis.fill_between(pos / 1000000, state.min(), state,
                       facecolor='black', alpha=0.5)

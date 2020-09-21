@@ -1,4 +1,4 @@
-from . import abs_checker
+from . import input_checker
 
 
 def plot(start, coverage, ylim_min, ylim_max, axis, name, chrom_max):
@@ -12,19 +12,17 @@ def plot(start, coverage, ylim_min, ylim_max, axis, name, chrom_max):
     :return: axis with plot
     # """
 
-    abs_checker.check_input_is_valid([start, coverage],
-                                     [abs_checker.CheckerTypes.NUMERIC,
-                                      abs_checker.CheckerTypes.FLOAT])
+    if coverage.empty:
+        return axis
+        
+    input_checker.check_input_is_valid([start, coverage],
+                                     [input_checker.CheckerTypes.NUMERIC,
+                                      input_checker.CheckerTypes.FLOAT])
 
     axis.set_xlim(0, chrom_max)
 
     axis.spines['top'].set_visible(False)
     axis.spines['right'].set_visible(False)
-    import logging
-    logging.getLogger("wgs.postprocessing.tasks").warn("\n\n\n\nstart\n\n\n")
-    logging.getLogger("wgs.postprocessing.tasks").warn(start)
-    logging.getLogger("wgs.postprocessing.tasks").warn("\n\n\n\ncoverage\n")
-    logging.getLogger("wgs.postprocessing.tasks").warn(coverage)
     axis.set_xticklabels([])
 
     
