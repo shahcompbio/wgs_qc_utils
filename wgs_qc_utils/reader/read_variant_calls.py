@@ -4,7 +4,7 @@ import gzip
 import numpy as np
 
 
-def handle_decompression(f):
+def handle_decompression(f, names):
     if f.endswith(".gz"):
         lines = parse(gzip.open(f, "rt"), "\t")
     else:
@@ -16,7 +16,6 @@ def prepare_at_chrom(variants, chrom, n_bins=200):
     '''
     prepare variants data to be plotted at a chrom
     '''
-    print(variants)
     variants = variants[variants["chrom"] == str(chrom)]
 
     return bin_frequencies(variants.pos, n_bins, variants.pos.min(),
@@ -95,6 +94,13 @@ def read_titan_vcf(f):
     return data
 
 
+
+def read_maf(f):
+    maf = pd.read_csv(f, sep="\t" skiprows=1, usecols=["Chromosome", "Start_Position"])
+    maf = maf.astype({"Chromosome": "chrom", "Start_Position": "pos"}) #arbitrarily choosing start position
+    return maf
+
+    
 def read(f):
     '''
     read in
@@ -115,6 +121,10 @@ def read(f):
     data.rename(columns={"chr":"chrom"}, inplace=True)
 
     return data
+
+
+def read_maf(f):
+    maf = pd.read_csv()
 
 
 def read_with_tumour(f):
@@ -143,9 +153,18 @@ def read_with_tumour(f):
     return data
 
 
+def _get_gzipped(file):
+    compression = None
+    with open(file) as f:
+        if f.read(2).encode("hex") == "1f8b":
+            compression = True
+    f.close()
+    return compression
+
 
 def read_svs(breakpoints):
-    breakpoints = pd.read_csv(breakpoints, compression=None)[["chromosome_1", "chromosome_2", "position_1", "position_2", "prediction_id", "rearrangement_type"]]
+    #don't use pandas info gzip uses name, filename doesnt always reflect compression
+    breakpoints = pd.read_csv(breakpoints)[["chromosome_1", "chromosome_2", "position_1", "position_2", "prediction_id", "rearrangement_type"]]
     breakpoints = breakpoints.astype({"chromosome_1": str, "chromosome_2": str, "rearrangement_type":str})
 
     breakpoints = pd.DataFrame({"chr": breakpoints["chromosome_1"].append(breakpoints["chromosome_2"]),
@@ -156,7 +175,7 @@ def read_svs(breakpoints):
     return breakpoints
 
 
-def parse(reader, sep):
+def parse(reader, sep, names):
     """
     parse vcf
     :param f: vcf file
