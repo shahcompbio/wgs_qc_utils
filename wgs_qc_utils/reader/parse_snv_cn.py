@@ -3,11 +3,10 @@ import numpy as np
 
 
 def parse(snvs, remixt):
-    
     snv_cn_table = annotate_copy_number(snvs, remixt,
                                         columns=['major', 'minor', 'total_raw_e',
                                                  'tumour_content', 'is_subclonal'])
-
+    # print(snv_cn_table, snv_cn_table.columns)
     output =  pd.DataFrame([calculate_cellular_frequency(row) for i, row in snv_cn_table.iterrows()])
     output.rename(columns={"chromosome":"chrom"})
     return output

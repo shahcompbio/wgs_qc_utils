@@ -4,7 +4,7 @@ import gzip
 import numpy as np
 
 
-def handle_decompression(f, names):
+def handle_decompression(f):
     if f.endswith(".gz"):
         lines = parse(gzip.open(f, "rt"), "\t")
     else:
@@ -37,6 +37,7 @@ def bin_frequencies(locations, n_bins, start, extent):
 
 
 def read_consensus_csv(f):
+    print(f)
     f = pd.read_csv(f)
     f["VAF_normal"] = f.AC_NORMAL/f.DP_NORMAL
     f["VAF_tumor"] = f.AC_TUMOUR/f.DP_TUMOUR
@@ -47,6 +48,23 @@ def read_consensus_csv(f):
 
     return f
 
+
+def matches(row, full):
+    if type(row.MATEID) == float:
+        #not a complex rearrangement
+        row["chrom_2"] = str(row.CHROM)
+        row["pos_2"] = int(row.END) 
+
+    else:
+        match = full[full.ID.isin(row.MATEID)]
+        row["chrom_2"] = str(match.CHROM[0])
+        row["pos_2"] = int(match.POS[0])
+
+    return row
+
+def add_matches(data):
+    data = data.apply(lambda row: matches(row, data), axis=1)
+    return data
 
 def read_full_slow(f, gz=False):
     if not gz:
@@ -96,7 +114,7 @@ def read_titan_vcf(f):
 
 
 def read_maf(f):
-    maf = pd.read_csv(f, sep="\t" skiprows=1, usecols=["Chromosome", "Start_Position"])
+    maf = pd.read_csv(f, sep="\t", skiprows=1, usecols=["Chromosome", "Start_Position"])
     maf = maf.astype({"Chromosome": "chrom", "Start_Position": "pos"}) #arbitrarily choosing start position
     return maf
 
@@ -105,21 +123,34 @@ def read(f):
     '''
     read in
     '''
-    lines = handle_decompression(f)
-    data = pd.DataFrame(lines,
-                        columns=["chr", "pos", "id", "ref", "alt", "qual",
-                                 "filter", "info", "format", "normal"])
+    if f.endswith(".gz"):
+        f = handle_decompression(f)
 
-    data = data.astype({"pos": np.int64, "chr": str})
+    if f.endswith(".maf"):
+        data = pd.read_csv(f, sep="\t", skiprows=1, usecols=["Chromosome", "Start_Position", "End_Position", "n_depth", "t_depth", "n_alt_count", "t_alt_count"])
+        data = data.rename(columns={"Chromosome":"chrom"})
+        data = data.astype({"chrom":"str"})
+        data["pos"] = data.apply(lambda row: (row.Start_Position+row.End_Position)/2, axis=1)
+        data = data.drop(["Start_Position", "End_Position"], axis=1)
+        data["VAF_normal"] = data.n_alt_count/data.n_depth
+        data["VAF_tumor"] = data.t_alt_count/data.t_depth
 
-    cols = data.format.str.split(":").tolist()[0]
-    data[cols] = data.normal.str.split(":", expand=True)
+        return data
+    else:
+        data = pd.DataFrame(f, columns=["chr", "pos", "id", "ref", "alt", "qual",
+            "filter", "info", "format", "normal"]
+        )
 
-    data = data.drop("format", axis=1)
-    data = data.drop("normal", axis=1)
-    data["chr"] = data.chr.str.lower()
-    data.rename(columns={"chr":"chrom"}, inplace=True)
+        data = data.astype({"pos": np.int64, "chr": str})
 
+        cols = data.format.str.split(":").tolist()[0]
+        data[cols] = data.normal.str.split(":", expand=True)
+
+        data = data.drop("format", axis=1)
+        data = data.drop("normal", axis=1)
+        data["chr"] = data.chr.str.lower()
+        data.rename(columns={"chr":"chrom"}, inplace=True)
+        return data
     return data
 
 
@@ -164,7 +195,8 @@ def _get_gzipped(file):
 
 def read_svs(breakpoints):
     #don't use pandas info gzip uses name, filename doesnt always reflect compression
-    breakpoints = pd.read_csv(breakpoints)[["chromosome_1", "chromosome_2", "position_1", "position_2", "prediction_id", "rearrangement_type"]]
+    # print(_get_gzipped(breakpoints))
+    breakpoints = pd.read_csv(breakpoints, compression=None, usecols = ["chromosome_1", "chromosome_2", "position_1", "position_2", "prediction_id", "rearrangement_type"])
     breakpoints = breakpoints.astype({"chromosome_1": str, "chromosome_2": str, "rearrangement_type":str})
 
     breakpoints = pd.DataFrame({"chr": breakpoints["chromosome_1"].append(breakpoints["chromosome_2"]),
