@@ -9,7 +9,8 @@ def read(file):
     :return: pandas dataframe
     """
 
-    data = rename(pd.read_csv(file, sep="\t"))
+    #data = rename(pd.read_csv(file, sep="\t"))
+    data = pd.read_csv(file, names=["ST","sample","chrom","pos","end","state","length","num_markers","qual"])
     data["chrom"] = data.chrom.str.lower()
     return data
 
@@ -20,7 +21,7 @@ def rename(data):
     :param data: read-in roh data dataframe
     :return: pandas dataframe
     """
-
+    
     data = data.rename(columns={" # ST": "ST",
                                 "[2]Sample": "sample",
                                 "[3]Chromosome": "chrom",

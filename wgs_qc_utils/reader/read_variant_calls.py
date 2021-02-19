@@ -125,18 +125,6 @@ def read(f):
     '''
     if f.endswith(".gz"):
         f = handle_decompression(f)
-
-    if f.endswith(".maf"):
-        data = pd.read_csv(f, sep="\t", skiprows=1, usecols=["Chromosome", "Start_Position", "End_Position", "n_depth", "t_depth", "n_alt_count", "t_alt_count"])
-        data = data.rename(columns={"Chromosome":"chrom"})
-        data = data.astype({"chrom":"str"})
-        data["pos"] = data.apply(lambda row: (row.Start_Position+row.End_Position)/2, axis=1)
-        data = data.drop(["Start_Position", "End_Position"], axis=1)
-        data["VAF_normal"] = data.n_alt_count/data.n_depth
-        data["VAF_tumor"] = data.t_alt_count/data.t_depth
-
-        return data
-    else:
         data = pd.DataFrame(f, columns=["chr", "pos", "id", "ref", "alt", "qual",
             "filter", "info", "format", "normal"]
         )
@@ -151,8 +139,15 @@ def read(f):
         data["chr"] = data.chr.str.lower()
         data.rename(columns={"chr":"chrom"}, inplace=True)
         return data
-    return data
-
+    if f.endswith(".maf"):
+        data = pd.read_csv(f, sep="\t", skiprows=1, usecols=["Chromosome", "Start_Position", "End_Position", "n_depth", "t_depth", "n_alt_count", "t_alt_count"])
+        data = data.rename(columns={"Chromosome":"chrom"})
+        data = data.astype({"chrom":"str"})
+        data["pos"] = data.apply(lambda row: (row.Start_Position+row.End_Position)/2, axis=1)
+        data = data.drop(["Start_Position", "End_Position"], axis=1)
+        data["VAF_normal"] = data.n_alt_count/data.n_depth
+        data["VAF_tumor"] = data.t_alt_count/data.t_depth
+        return data
 
 def read_maf(f):
     maf = pd.read_csv()
@@ -196,7 +191,7 @@ def _get_gzipped(file):
 def read_svs(breakpoints):
     #don't use pandas info gzip uses name, filename doesnt always reflect compression
     # print(_get_gzipped(breakpoints))
-    breakpoints = pd.read_csv(breakpoints, compression=None, usecols = ["chromosome_1", "chromosome_2", "position_1", "position_2", "prediction_id", "rearrangement_type"])
+    breakpoints = pd.read_csv(breakpoints, usecols = ["chromosome_1", "chromosome_2", "position_1", "position_2", "prediction_id", "rearrangement_type"])
     breakpoints = breakpoints.astype({"chromosome_1": str, "chromosome_2": str, "rearrangement_type":str})
 
     breakpoints = pd.DataFrame({"chr": breakpoints["chromosome_1"].append(breakpoints["chromosome_2"]),
@@ -207,7 +202,7 @@ def read_svs(breakpoints):
     return breakpoints
 
 
-def parse(reader, sep, names):
+def parse(reader, sep):
     """
     parse vcf
     :param f: vcf file
