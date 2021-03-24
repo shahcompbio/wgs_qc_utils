@@ -1,7 +1,8 @@
 from . import input_checker
+from . import gene_annotation_plotting
 
 
-def plot(start, coverage, ylim_min, ylim_max, axis, name, chrom_max):
+def plot(start, coverage, ylim_min, ylim_max, axis, name, chrom_max, anno_genes=[]):
     """
     plot coverage data on an axis
     :param prepped_coverage: prepped coverage data
@@ -35,5 +36,8 @@ def plot(start, coverage, ylim_min, ylim_max, axis, name, chrom_max):
     axis.set_ylabel(name, fontsize=14, fontname="Arial")
 
     axis.set_ylim(ylim_min, ylim_max)
+
+    if any(anno_genes):
+        axis = gene_annotation_plotting.plot_anno_genes(anno_genes, axis.get_ylim()[0], axis.get_ylim()[1], axis)
 
     return axis

@@ -8,27 +8,11 @@ def read(file):
     :param file: roh file
     :return: pandas dataframe
     """
-    data = pd.read_csv(file, names=["ST","sample","chrom","pos","end","state","length","num_markers","qual"])
+    data = pd.read_csv(file, usecols=["type","sample","chromosome","start","state","quality"])
+    data = data.rename(columns={"chromosome": "chrom", "quality":"qual"})
     data = data.astype({"chrom":str})
     data["chrom"] = data.chrom.str.lower()
     
-    return data
-
-
-def rename(data):
-    """
-    simplify column names
-    :param data: read-in roh data dataframe
-    :return: pandas dataframe
-    """
-    
-    data = data.rename(columns={" # ST": "ST",
-                                "[2]Sample": "sample",
-                                "[3]Chromosome": "chrom",
-                                "[4]Position": "pos",
-                                "[5]State (0:HW, 1:AZ)": "state",
-                                "[6]Quality (fwd-bwd phred score)": "qual"})
-    data = data.astype({"chrom":str})
     return data
 
 

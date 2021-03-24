@@ -7,7 +7,7 @@ from . import input_checker
 
 
 def plot(position, log_ratio, color, axis, chrom_max, anno_genes=[]):
-    """
+    """f
     plot prepped copy number data on axis
     :param prepped_copy_number: prepped copy number data (read->prepare_at_chrom->
     :param anno_genes:
