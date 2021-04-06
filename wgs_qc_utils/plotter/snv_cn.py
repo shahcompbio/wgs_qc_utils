@@ -1,11 +1,12 @@
 import numpy as np
 from . import input_checker
 import pandas as pd
+from wgs_qc_utils.utils.empty import empty_plot
+
 
 def plot_scatter(pos, frac_cn, axis, logistic_y=False):
-
-    if frac_cn.empty:
-        return axis
+    if not isinstance(pos, pd.Series) and not isinstance(frac_cn, pd.Series):
+        return empty_plot(axis, "Snv Cn", snv_cn=True)
 
     input_checker.check_input_is_valid([pos, frac_cn],
                                             [input_checker.CheckerTypes.NUMERIC,
@@ -22,6 +23,8 @@ def plot_scatter(pos, frac_cn, axis, logistic_y=False):
 
 
 def plot_hist(frac_cn, axis, logistic_y=False):
+    if not isinstance(frac_cn, pd.Series):
+        return empty_plot(axis, "Snv cn", snv_cn=True)
     if frac_cn.empty:
         axis.set_ylim(0, 8)
         axis.set_ylabel("SNV density")

@@ -2,6 +2,8 @@ import pandas as pd
 from . import input_checker
 import logging
 import os
+from wgs_qc_utils.utils.empty import empty_plot
+
 
 def plot_bar(location, n_events, axis, name, chrom_max):
     """
@@ -13,9 +15,8 @@ def plot_bar(location, n_events, axis, name, chrom_max):
     :param chrom_max: max of x axis
     :return:  updated axis
     """
-
-    if n_events.empty:
-        return axis
+    if not isinstance(location, pd.Series) and not isinstance(n_events, pd.Series):
+        return empty_plot(axis, "Breakpoints")
 
     input_checker.check_input_is_valid([location, n_events],
                                      [input_checker.CheckerTypes.NUMERIC,
@@ -38,7 +39,7 @@ def plot_bar(location, n_events, axis, name, chrom_max):
     return axis
 
 
-def plot_fill(location, n_events, axis, name, chrom_max):
+def plot_fill(location, n_events, axis, name, chrom_max, type):
     '''
     filled line plot of variants on axis
     :param location: location col from read in variant calls
@@ -48,6 +49,9 @@ def plot_fill(location, n_events, axis, name, chrom_max):
     :param chrom_max: max of x axis
     :return:  updated axis
     '''
+    if not isinstance(location, pd.Series) and not isinstance(n_events, pd.Series):
+        return empty_plot(axis, type)
+        
     input_checker.check_input_is_valid([location, n_events],
                                      [input_checker.CheckerTypes.NUMERIC,
                                       input_checker.CheckerTypes.INT])

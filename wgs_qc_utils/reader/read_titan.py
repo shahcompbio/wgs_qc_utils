@@ -10,6 +10,8 @@ def read(copy_number):
     """
 
     read = pd.read_csv(copy_number, sep="\t")
+
+    
     read = read.astype({"Chr": str})
 
     n_extra = read.TITANstate.max() - 7

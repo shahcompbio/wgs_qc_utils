@@ -4,7 +4,7 @@ matplotlib.use('Agg')
 from matplotlib.lines import Line2D
 from . import gene_annotation_plotting
 from . import input_checker
-
+import pandas as pd
 
 def plot(position, log_ratio, color, axis, chrom_max, anno_genes=[]):
     """f
@@ -14,8 +14,8 @@ def plot(position, log_ratio, color, axis, chrom_max, anno_genes=[]):
     :param axis:
     :return:
     """
-    if log_ratio.empty:
-        return axis
+    if not isinstance(position, pd.Series) and not isinstance(log_ratio, pd.Series) and not isinstance(color, pd.Series):
+        return empty_plot(axis, "Titan")
 
     input_checker.check_input_is_valid([position, log_ratio, color],
                                             [input_checker.CheckerTypes.NUMERIC,

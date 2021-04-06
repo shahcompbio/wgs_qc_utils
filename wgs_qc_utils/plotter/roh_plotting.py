@@ -1,4 +1,7 @@
 from . import input_checker
+from wgs_qc_utils.utils.empty import empty_plot
+import pandas as pd
+
 
 
 def plot(pos, state, axis, chrom_max):
@@ -8,10 +11,8 @@ def plot(pos, state, axis, chrom_max):
     :param axis: axis to plot on
     :return: axis with plot
     """
-
-
-    if state.empty:
-        return axis
+    if not isinstance(pos, pd.Series) and not isinstance(state, pd.Series):
+        return empty_plot(axis, "roh")
         
     input_checker.check_input_is_valid([pos, state],
                                             [input_checker.CheckerTypes.NUMERIC,

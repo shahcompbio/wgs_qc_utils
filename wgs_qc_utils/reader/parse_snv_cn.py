@@ -1,8 +1,16 @@
 import pandas as pd
 import numpy as np
+from wgs_qc_utils.reader.read_variant_calls import EmptyVariantReader
+
+class EmptySnvCnReader():
+    def __init__(self):
+        self.pos = None
+        self.frac_cn = None
 
 
 def parse(snvs, remixt):
+    if isinstance(snvs, EmptyVariantReader):
+        return EmptySnvCnReader()
     snv_cn_table = annotate_copy_number(snvs, remixt,
                                         columns=['major', 'minor', 'total_raw_e',
                                                  'tumour_content', 'is_subclonal'])
@@ -13,7 +21,8 @@ def parse(snvs, remixt):
 
 
 def prepare_at_chrom(transformed_snv, chrom):
-
+    if isinstance(transformed_snv, EmptySnvCnReader):
+        return EmptySnvCnReader()
     out = transformed_snv[transformed_snv.chrom == chrom]
     return out
 

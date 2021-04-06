@@ -3,6 +3,11 @@ import vcf
 import gzip
 import numpy as np
 
+class EmptyVariantReader():
+    def __init__(self):
+        self.location = None
+        self.n_events = None
+
 
 def handle_decompression(f):
     if f.endswith(".gz"):
@@ -16,6 +21,8 @@ def prepare_at_chrom(variants, chrom, n_bins=200):
     '''
     prepare variants data to be plotted at a chrom
     '''
+    if isinstance(variants, EmptyVariantReader):
+        return variants
     variants = variants[variants["chrom"] == str(chrom)]
 
     return bin_frequencies(variants.pos, n_bins, variants.pos.min(),
@@ -37,7 +44,6 @@ def bin_frequencies(locations, n_bins, start, extent):
 
 
 def read_consensus_csv(f):
-    print(f)
     f = pd.read_csv(f)
     f["VAF_normal"] = f.AC_NORMAL/f.DP_NORMAL
     f["VAF_tumor"] = f.AC_TUMOUR/f.DP_TUMOUR
@@ -85,7 +91,8 @@ def read_titan_vcf(f):
     data = pd.DataFrame(lines, columns=["chr", "pos", "id", "ref", "alt",
                                                           "qual", "filter", "info",
                                                            "format", "tumour", "normal"])
-
+    if data.empty:
+        return data
     data = data.astype({"pos": np.int64, "chr": str})[["chr", "pos","format",
                                                            "tumour", "normal"]]
     cols = data.format.str.split(":").tolist()[0]
@@ -128,7 +135,9 @@ def read(f):
         data = pd.DataFrame(f, columns=["chr", "pos", "id", "ref", "alt", "qual",
             "filter", "info", "format", "normal"]
         )
-
+        if data.empty:
+            return EmptyVariantReader()
+            
         data = data.astype({"pos": np.int64, "chr": str})
 
         cols = data.format.str.split(":").tolist()[0]
@@ -139,10 +148,15 @@ def read(f):
         data["chr"] = data.chr.str.lower()
         data.rename(columns={"chr":"chrom"}, inplace=True)
         return data
+        
     if f.endswith(".maf"):
+        
         data = pd.read_csv(f, sep="\t", skiprows=1, usecols=["Chromosome", "Start_Position", "End_Position", "n_depth", "t_depth", "n_alt_count", "t_alt_count"])
+        if data.empty:
+            return EmptyVariantReader()
         data = data.rename(columns={"Chromosome":"chrom"})
         data = data.astype({"chrom":"str"})
+        print(data, data.Start_Position, data.End_Position, data.columns)
         data["pos"] = data.apply(lambda row: (row.Start_Position+row.End_Position)/2, axis=1)
         data = data.drop(["Start_Position", "End_Position"], axis=1)
         data["VAF_normal"] = data.n_alt_count/data.n_depth
@@ -151,7 +165,6 @@ def read(f):
 
 def read_maf(f):
     maf = pd.read_csv()
-
 
 def read_with_tumour(f):
     '''
@@ -192,6 +205,8 @@ def read_svs(breakpoints):
     #don't use pandas info gzip uses name, filename doesnt always reflect compression
     # print(_get_gzipped(breakpoints))
     breakpoints = pd.read_csv(breakpoints, usecols = ["chromosome_1", "chromosome_2", "position_1", "position_2", "prediction_id", "rearrangement_type"])
+    if breakpoints.empty:
+        return EmptyVariantReader()
     breakpoints = breakpoints.astype({"chromosome_1": str, "chromosome_2": str, "rearrangement_type":str})
 
     breakpoints = pd.DataFrame({"chr": breakpoints["chromosome_1"].append(breakpoints["chromosome_2"]),
