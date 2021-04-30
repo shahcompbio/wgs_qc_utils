@@ -1,5 +1,4 @@
 import pandas as pd
-from wgs_qc_utils.reader.ideogram import read_ideogram
 import os
 import pkg_resources
 
