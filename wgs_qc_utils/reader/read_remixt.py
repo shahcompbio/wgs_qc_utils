@@ -1,9 +1,22 @@
 import pandas as pd
+import os
+import yaml
+
+def read(remixt):
+    cnv_data = pd.read_csv(remixt, sep="\t")
+
+    cnv_data["total_raw_e"] = cnv_data.major_raw_e + cnv_data.minor_raw_e
+    cnv_data["chromosome"] = cnv_data.chromosome.str.lower()
+    cnv_data.rename(columns={"chromosome":"chrom"}, inplace=True)
+    
+    meta = os.path.join(os.path.dirname(remixt), "meta.yaml")
+    metadata = yaml.load(open(meta))
+    cnv_data["tumour_content"] = sum(metadata["mix"][1:])
+    return cnv_data
 
 # ~~~~~~~~~~~~~~~~~~~~ code from Andrew McPherson ~~~~~~~~~~~~~~~~~~~~~~ #
 
-
-def read(remixt_file, sample_label):
+def read_h5(remixt_file, sample_label):
     """
     read in remixt data into pandas dataframe
     :param remixt_file: remixt input file (i.e. results_files_*.h5)
@@ -72,5 +85,7 @@ def make_for_circos(remixt, sample_id, prepped_remixt):
     if not remixt:
         return None
 
-    remixt = read(remixt, sample_id)
+    remixt = read(remixt)
+    remixt["combined"] = remixt.major_raw + remixt.minor_raw
+    remixt = remixt[remixt.combined <= 8]
     remixt.to_csv(prepped_remixt, sep="\t", index=False, header=True)

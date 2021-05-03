@@ -12,8 +12,8 @@ def parse(snvs, remixt):
     if isinstance(snvs, EmptyVariantReader):
         return EmptySnvCnReader()
     snv_cn_table = annotate_copy_number(snvs, remixt,
-                                        columns=['major', 'minor', 'total_raw_e',
-                                                 'tumour_content', 'is_subclonal'])
+                                        columns=['major_raw', 'minor_raw', 'total_raw_e',
+                                                 'tumour_content'])
     # print(snv_cn_table, snv_cn_table.columns)
     output =  pd.DataFrame([calculate_cellular_frequency(row) for i, row in snv_cn_table.iterrows()])
     output.rename(columns={"chromosome":"chrom"})
@@ -27,7 +27,7 @@ def prepare_at_chrom(transformed_snv, chrom):
     return out
 
 
-def annotate_copy_number(pos, seg, columns=['major', 'minor']):
+def annotate_copy_number(pos, seg, columns=['major_raw', 'minor_raw']):
     results = []
 
     for chrom in seg['chrom'].unique():
@@ -52,22 +52,22 @@ def find_overlapping_segments(pos, seg, columns):
 
 
 def calculate_cellular_frequency(row):
-    if row['major'] == 0:
+    if row['major_raw'] == 0:
         row['ccf'] = 0.
         row['alt_cn'] = 0
         return row
     ccfs = list()
     cns = list()
     total_depth = (2. * (1. - row['tumour_content']) + row['total_raw_e'] * row['tumour_content'])
-    for cn in range(1, int(row['major']) + 1):
-        alt_depth = row['tumour_content'] * cn
-        ccf = row['VAF_tumor'] * total_depth / alt_depth
-        ccfs.append(ccf)
-        cns.append(cn)
-    ccfs = np.array(ccfs)
-    cns = np.array(cns)
-    idx = np.argmin(np.absolute(1. - ccfs))
-    row['ccf'] = ccfs[idx]
-    row['alt_cn'] = cns[idx]
+#    for cn in range(1, int(row['major_raw']) + 1):
+#        alt_depth = row['tumour_content'] * cn
+#        ccf = row['VAF_tumor'] * total_depth / alt_depth
+#        ccfs.append(ccf)
+#        cns.append(cn)
+#    ccfs = np.array(ccfs)
+#    cns = np.array(cns)
+#    idx = np.argmin(np.absolute(1. - ccfs))
+#    row['ccf'] = ccfs[idx]
+#    row['alt_cn'] = cns[idx]
     row['frac_cn'] = row['VAF_tumor'] * total_depth / row['tumour_content']
     return row
