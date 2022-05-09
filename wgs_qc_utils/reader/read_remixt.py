@@ -6,6 +6,7 @@ def read(remixt):
     cnv_data = pd.read_csv(remixt, sep="\t")
 
     cnv_data["total_raw_e"] = cnv_data.major_raw_e + cnv_data.minor_raw_e
+    cnv_data["chromosome"] = cnv_data.chromosome.astype(str) # object -> str
     cnv_data["chromosome"] = cnv_data.chromosome.str.lower()
     cnv_data.rename(columns={"chromosome":"chrom"}, inplace=True)
     
