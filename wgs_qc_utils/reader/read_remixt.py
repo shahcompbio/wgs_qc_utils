@@ -3,7 +3,7 @@ import os
 import yaml
 
 def read(remixt):
-    cnv_data = pd.read_csv(remixt, sep="\t")
+    cnv_data = pd.read_csv(remixt, sep="\t", converters={'chromosome': str})
 
     cnv_data["total_raw_e"] = cnv_data.major_raw_e + cnv_data.minor_raw_e
     cnv_data["chromosome"] = cnv_data.chromosome.str.lower()
