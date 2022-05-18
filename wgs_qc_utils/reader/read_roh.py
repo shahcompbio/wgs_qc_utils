@@ -8,9 +8,6 @@ class EmptyRohReader():
         self.state = None
 
 
-
-
-
 def read(file):
     """
     read in roh data to pandas df
@@ -18,12 +15,19 @@ def read(file):
     :return: pandas dataframe
     """
     if file.endswith(".gz"):
-        data = pd.read_csv(file, usecols=["type","sample","chromosome","start","state","quality"])
+        data = pd.read_csv(
+            file, 
+            usecols=["type","sample","chromosome","start","state","quality"],
+            converters={
+                'chromosome': str,
+            }
+        )
     else:
         data = _parse_old_roh_format(file)
     if data.empty:
         return EmptyRohReader()
     data = data.rename(columns={"chromosome": "chrom", "quality":"qual"})
+    data = data[~data.state.isna()]
     data = data.astype({"chrom":str})
     data["chrom"] = data.chrom.str.lower()
     
