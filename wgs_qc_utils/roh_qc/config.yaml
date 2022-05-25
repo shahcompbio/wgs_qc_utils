@@ -1,0 +1,12 @@
+isabl_sample_id: ADT001
+
+intermediate_dir: results/intermediate
+
+results_dir: results
+
+log_dir: log
+
+reference: /juno/work/shah/reference/genomes/GRCh37-lite/GRCh37-lite.fa
+
+gtf_filename: /juno/work/shah/reference/wgs_pipeline/Homo_sapiens.GRCh37.70.gtf
+

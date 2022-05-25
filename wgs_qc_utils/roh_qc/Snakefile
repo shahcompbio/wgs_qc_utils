@@ -1,0 +1,112 @@
+configfile: 'config.yaml'
+
+import os
+
+import shahlabdata.isabl
+from wgs.workflows.samtools_germline.tasks import generate_intervals
+
+isabl_sample_ids = [config['isabl_sample_id']]
+isabl_sample_id = isabl_sample_ids[0]
+gtf_filename = config['gtf_filename']
+
+intermediate_dir = config['intermediate_dir']
+log_dir = config['log_dir']
+results_dir = config['results_dir']
+
+chromosomes = [str(x) for x in range(1, 23)] + ['X', 'Y']
+interval_size = 1e7 # 1e9 to cover all chroms
+intervals = generate_intervals(config['reference'], chromosomes, interval_size)
+
+def get_input_bam(isabl_sample_id):
+    analyses = shahlabdata.isabl.get_results(
+        application='WGS-ALIGNMENT', 
+        sample_id=isabl_sample_id,
+    )
+    paths = analyses[analyses['result_type']=='bam']
+                    ['result_filepath'].values
+    assert len(paths) == 1 # "the one true bam"
+    assert os.path.exists(paths[0]) # bam exists
+    assert os.path.exists(analyses[analyses['result_type']=='bai'] # bai exists
+                                   ['result_filepath'].values[0])
+    return paths[0]
+
+
+rule all:
+    input: 
+        os.path.join(results_dir, f'roh_qc.{isabl_sample_id}.pdf'),
+
+rule samtools_germline:
+    input: 
+        bam=get_input_bam(isabl_sample_id),
+        ref=config['reference']
+    output: 
+        os.path.join(intermediate_dir, 
+            'samtools_germline.{sample}.{interval}.vcf.gz')
+    log: 
+        os.path.join(log_dir, 
+            'samtools_germline.{sample}.{interval}.vcf.gz.log')
+    params:
+        region = lambda wc: "{}:{}-{}".format(*wc.interval.split('_'))
+    shell: 
+        "samtools mpileup -ugf {input.ref} -Q 20 -q 10 "
+        "-r {params.region} {input.bam} 2> {log} | "
+        "bcftools call -vmO z -o {output} &>> {log}"
+
+rule bcftools_roh:
+    input:
+        os.path.join(intermediate_dir, 
+            'samtools_germline.{sample}.{interval}.vcf.gz')
+    output:
+        os.path.join(intermediate_dir, 
+            'samtools_germline.{sample}.{interval}.roh.tsv')
+    log: 
+        os.path.join(log_dir, 
+            'samtools_germline.{sample}.{interval}.roh.log')
+    shell: 
+        "bcftools roh -G30 --AF-dflt 0.4 {input} "
+        "> {output} 2> {log}"
+
+rule bcftools_concat:
+    input:
+        expand(os.path.join(intermediate_dir, 
+            'samtools_germline.{sample}.{interval}.roh.tsv'),
+            sample=isabl_sample_ids,
+            interval=intervals)
+    output:
+        os.path.join(results_dir, 
+            f'samtools_germline.{isabl_sample_id}.roh.vcf.gz')
+    log: 
+        os.path.join(log_dir, 
+            f'samtools_germline.{isabl_sample_id}.roh.log')
+    shell: 
+        "bcftools concat -O z -o {output} "
+        "{input} 2> {log}"
+
+rule bcftools_sort:
+    input:
+        os.path.join(results_dir, 
+            f'samtools_germline.{isabl_sample_id}.roh.vcf.gz')
+    output:
+        os.path.join(results_dir, 
+            f'samtools_germline.{isabl_sample_id}.roh.sorted.vcf.gz')
+    log: 
+        os.path.join(log_dir, 
+            f'samtools_germline.{isabl_sample_id}.roh.sorted.log')
+    shell: 
+        "bcftools sort -m 4G -O z -o {output} -T tmp {input} 2> {log}"
+
+rule plot_roh:
+    input:
+        os.path.join(results_dir, 
+            f'samtools_germline.{isabl_sample_id}.roh.sorted.vcf.gz')
+    output:
+        os.path.join(results_dir, 
+            f'roh_qc.{isabl_sample_id}.pdf')
+    log: 
+        os.path.join(log_dir, 
+            f'roh_qc.{isabl_sample_id}.log')
+    shell: 
+        "python ../plot_roh.py "
+        f"--roh {input} --sample {isabl_sample_id} "
+        "--pdf {output} &> {log}"
+
