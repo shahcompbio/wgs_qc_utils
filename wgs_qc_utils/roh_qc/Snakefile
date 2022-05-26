@@ -22,8 +22,7 @@ def get_input_bam(isabl_sample_id):
         application='WGS-ALIGNMENT', 
         sample_id=isabl_sample_id,
     )
-    paths = analyses[analyses['result_type']=='bam']
-                    ['result_filepath'].values
+    paths = analyses[analyses['result_type']=='bam']['result_filepath'].values
     assert len(paths) == 1 # "the one true bam"
     assert os.path.exists(paths[0]) # bam exists
     assert os.path.exists(analyses[analyses['result_type']=='bai'] # bai exists
