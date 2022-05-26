@@ -2,7 +2,24 @@
 
 Creates a single-page PDF including ROH status for all chromosomes.
 
-Run the following command:
+Run the following command (test run version):
+
+```
+snakemake \
+  --configfile config.yaml \
+  --cores 12
+```
+
+You can directly edit current config for your `isabl_sample_id`:
+
+```
+snakemake \
+  --configfile config.yaml \
+  --cores 12 \
+  --config isabl_sample_id=ISABL_SAMPLE_ID
+```
+
+TODO: Dockerize to enable something like:
 
 ```
 CLUSTER_CMD=("bsub -n {threads} -R {cluster.resources} -M {cluster.memory} -o {cluster.output} -J {cluster.name} -W {cluster.time}")

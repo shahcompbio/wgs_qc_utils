@@ -65,7 +65,7 @@ def get_nrow_ncol_by_chromosomes(chromosomes):
         help="Isabl sample ID (str)")
 @click.option("--pdf", required=True,
         help="output plot pdf path")
-@click.option("--genome_version", default='hg19',show_default=True,
+@click.option("--genome_version", default='hg19', show_default=True,
         help="select genome version")
 def plot_roh_on_ideogram(roh, genome_version, sample, pdf):
     refgenome.set_genome_version(genome_version)
@@ -107,7 +107,6 @@ def plot_roh_on_ideogram(roh, genome_version, sample, pdf):
         for ix in range(len(chromosomes), nrows*ncols):
             axes[ix].set_axis_off() # remove subplots not assigned to chrom
                 
-        # plt.tight_layout() # fuck tight layout - will screw up plt.Axes.set_position
         pdf.savefig(fig)
 
 
