@@ -106,7 +106,7 @@ rule plot_roh:
         os.path.join(log_dir, 
             f'roh_qc.{isabl_sample_id}.log')
     shell: 
-        "python ../plot_roh.py "
+        "python scripts/plot_roh.py "
         f"--roh {input} --sample {isabl_sample_id} "
         "--pdf {output} &> {log}"
 
