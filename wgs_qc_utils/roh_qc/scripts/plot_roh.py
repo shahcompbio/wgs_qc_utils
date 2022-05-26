@@ -3,7 +3,6 @@ import logging
 import numpy as np
 import matplotlib
 import pandas as pd
-import matplotlib
 
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
@@ -16,6 +15,7 @@ from wgs_qc_utils.reader import read_roh
 
 from wgs_qc_utils.reader.ideogram import read_ideogram
 
+import scgenome.refgenome as refgenome
 
 
 def ideogram_plot(ideogram, axis):
@@ -38,13 +38,6 @@ def roh_plot(pos, state, axis, chrom_max):
     :param axis: axis to plot on (pyplot.axis)
     :return: axis with plot (pyplot.axis)
     """
-#     if not isinstance(pos, pd.Series) and not isinstance(state, pd.Series):
-#         return empty_plot(axis, "roh")
-        
-#     input_checker.check_input_is_valid([pos, state],
-#                                             [input_checker.CheckerTypes.NUMERIC,
-#                                              input_checker.CheckerTypes.NUMERIC])
-
     margin = 0.1
     axis.fill_between(pos / 1000000, 
                       state.min()+state*margin, 
@@ -57,6 +50,14 @@ def roh_plot(pos, state, axis, chrom_max):
     return axis
 
 
+def get_nrow_ncol_by_chromosomes(chromosomes):
+    nrows = 1 # subplot nrows of plot
+    ncols = 3 # subplot ncols of plot
+    while nrows * ncols < len(chromosomes):
+        nrows += 1
+    return nrows, ncols
+
+
 @click.command()
 @click.option("--roh", type=click.Path(exists=True), required=True,
         help="processed bcftools roh output (csv.gz)")
@@ -64,12 +65,12 @@ def roh_plot(pos, state, axis, chrom_max):
         help="Isabl sample ID (str)")
 @click.option("--pdf", required=True,
         help="output plot pdf path")
-@click.option("--chromosomes", 
-        default = ','.join([str(_) for _ in range(1,23)] + ['x', 'y']),
-        show_default=True,
-        help="string of chromosomes[,] (str)")
-def plot_roh_on_ideogram(roh, chromosomes, sample, pdf):
-    chromosomes = chromosomes.split(',')
+@click.option("--genome_version", default='hg19',show_default=True,
+        help="select genome version")
+def plot_roh_on_ideogram(roh, genome_version, sample, pdf):
+    refgenome.set_genome_version(genome_version)
+    chromosomes = refgenome.info.chromosomes 
+    chromosomes = [chrom.lower() for chrom in chromosomes]
     roh = read_roh.read(roh)
     logging.debug(f'roh.head() = \n', roh.head())
     ideogram = read_ideogram.read()
@@ -81,12 +82,9 @@ def plot_roh_on_ideogram(roh, chromosomes, sample, pdf):
 
         fig = plt.figure(figsize=(15, 9))
         fig.suptitle(f'\n\nROH for sample ID: {sample}', fontsize=16)
-        nrows = 8
-        ncols = 3
+        nrows, ncols = get_nrow_ncol_by_chromosomes(chromosomes)
         gs = fig.add_gridspec(nrows, ncols)
         axes = [plt.subplot(cell) for cell in gs]
-
-        chromosomes = [chrom.lower() for chrom in chromosomes]
 
         for ix, chrom in enumerate(chromosomes):
             logging.info(f'chromosome {chrom} being plotted')
@@ -105,6 +103,9 @@ def plot_roh_on_ideogram(roh, chromosomes, sample, pdf):
             axes[ix].set_xlabel('   Mbp', fontsize=8, ha='left')
             axes[ix].xaxis.set_label_coords(1, -0.3)
             axes[ix].set_rasterized(True)
+
+        for ix in range(len(chromosomes), nrows*ncols):
+            axes[ix].set_axis_off() # remove subplots not assigned to chrom
                 
         # plt.tight_layout() # fuck tight layout - will screw up plt.Axes.set_position
         pdf.savefig(fig)
