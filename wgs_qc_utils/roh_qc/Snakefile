@@ -40,33 +40,18 @@ rule samtools_germline:
         "-r {params.region} {input.bam} 2> {log} | "
         "bcftools call -vmO z -o {output} &>> {log}"
 
-rule bcftools_roh:
-    input:
-        os.path.join(intermediate_dir, 
-            'samtools_germline.{sample}.{interval}.vcf.gz')
-    output:
-        os.path.join(intermediate_dir, 
-            'samtools_germline.{sample}.{interval}.roh.tsv')
-    log: 
-        os.path.join(log_dir, 
-            'samtools_germline.{sample}.{interval}.roh.log')
-    singularity: "docker://soymintc/roh_qc:0.0.1"
-    shell: 
-        "bcftools roh -G30 --AF-dflt 0.4 {input} "
-        "> {output} 2> {log}"
-
 rule bcftools_concat:
     input:
         expand(os.path.join(intermediate_dir, 
-            'samtools_germline.{sample}.{interval}.roh.tsv'),
+            'samtools_germline.{sample}.{interval}.vcf.gz'),
             sample=isabl_sample_ids,
             interval=intervals)
     output:
-        os.path.join(results_dir, 
-            f'samtools_germline.{isabl_sample_id}.roh.vcf.gz')
+        os.path.join(intermediate_dir, 
+            f'samtools_germline.{isabl_sample_id}.vcf.gz')
     log: 
         os.path.join(log_dir, 
-            f'samtools_germline.{isabl_sample_id}.roh.log')
+            f'samtools_germline.{isabl_sample_id}.vcf.log')
     singularity: "docker://soymintc/roh_qc:0.0.1"
     shell: 
         "bcftools concat -O z -o {output} "
@@ -74,22 +59,37 @@ rule bcftools_concat:
 
 rule bcftools_sort:
     input:
-        os.path.join(results_dir, 
-            f'samtools_germline.{isabl_sample_id}.roh.vcf.gz')
+        os.path.join(intermediate_dir, 
+            f'samtools_germline.{isabl_sample_id}.vcf.gz')
     output:
-        os.path.join(results_dir, 
-            f'samtools_germline.{isabl_sample_id}.roh.sorted.vcf.gz')
+        os.path.join(intermediate_dir, 
+            f'samtools_germline.{isabl_sample_id}.sorted.vcf.gz')
     log: 
         os.path.join(log_dir, 
-            f'samtools_germline.{isabl_sample_id}.roh.sorted.log')
+            f'samtools_germline.{isabl_sample_id}.sorted.vcf.log')
     singularity: "docker://soymintc/roh_qc:0.0.1"
     shell: 
         "bcftools sort -m 4G -O z -o {output} -T tmp {input} 2> {log}"
 
+rule bcftools_roh:
+    input:
+        os.path.join(intermediate_dir, 
+            f'samtools_germline.{isabl_sample_id}.sorted.vcf.gz')
+    output:
+        os.path.join(results_dir, 
+            f'samtools_germline.{isabl_sample_id}.roh.tsv')
+    log: 
+        os.path.join(log_dir, 
+            f'samtools_germline.{isabl_sample_id}.roh.tsv.log')
+    singularity: "docker://soymintc/roh_qc:0.0.1"
+    shell: 
+        "bcftools roh -G30 --AF-dflt 0.4 {input} "
+        "> {output} 2> {log}"
+
 rule plot_roh:
     input:
         os.path.join(results_dir, 
-            f'samtools_germline.{isabl_sample_id}.roh.sorted.vcf.gz')
+            f'samtools_germline.{isabl_sample_id}.roh.tsv')
     output:
         os.path.join(results_dir, 
             f'roh_qc.{isabl_sample_id}.pdf')
