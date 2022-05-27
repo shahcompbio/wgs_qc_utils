@@ -34,7 +34,7 @@ rule samtools_germline:
             'samtools_germline.{sample}.{interval}.vcf.gz.log')
     params:
         region = lambda wc: "{}:{}-{}".format(*wc.interval.split('_'))
-    singularity: "docker://soymintc/roh_qc"
+    singularity: "docker://soymintc/roh_qc:0.0.1"
     shell: 
         "samtools mpileup -ugf {input.ref} -Q 20 -q 10 "
         "-r {params.region} {input.bam} 2> {log} | "
@@ -50,7 +50,7 @@ rule bcftools_roh:
     log: 
         os.path.join(log_dir, 
             'samtools_germline.{sample}.{interval}.roh.log')
-    singularity: "docker://soymintc/roh_qc"
+    singularity: "docker://soymintc/roh_qc:0.0.1"
     shell: 
         "bcftools roh -G30 --AF-dflt 0.4 {input} "
         "> {output} 2> {log}"
@@ -67,7 +67,7 @@ rule bcftools_concat:
     log: 
         os.path.join(log_dir, 
             f'samtools_germline.{isabl_sample_id}.roh.log')
-    singularity: "docker://soymintc/roh_qc"
+    singularity: "docker://soymintc/roh_qc:0.0.1"
     shell: 
         "bcftools concat -O z -o {output} "
         "{input} 2> {log}"
@@ -82,7 +82,7 @@ rule bcftools_sort:
     log: 
         os.path.join(log_dir, 
             f'samtools_germline.{isabl_sample_id}.roh.sorted.log')
-    singularity: "docker://soymintc/roh_qc"
+    singularity: "docker://soymintc/roh_qc:0.0.1"
     shell: 
         "bcftools sort -m 4G -O z -o {output} -T tmp {input} 2> {log}"
 
@@ -96,7 +96,7 @@ rule plot_roh:
     log: 
         os.path.join(log_dir, 
             f'roh_qc.{isabl_sample_id}.log')
-    singularity: "docker://soymintc/roh_qc"
+    singularity: "docker://soymintc/roh_qc:0.0.1"
     shell: 
         "python scripts/plot_roh.py "
         f"--roh {input} --sample {isabl_sample_id} "
