@@ -1,4 +1,4 @@
-FROM conda/miniconda3
+FROM python:3.8
 
 # docker build -t shahlab/classifycopynumber:latest .
 # docker push shahlab/classifycopynumber:latest
