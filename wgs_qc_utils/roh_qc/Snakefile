@@ -98,7 +98,7 @@ rule plot_roh:
             f'roh_qc.{isabl_sample_id}.log')
     singularity: "docker://soymintc/roh_qc:0.0.1"
     shell: 
-        "python scripts/plot_roh.py "
+        "plot_roh.py "
         f"--roh {input} --sample {isabl_sample_id} "
         "--pdf {output} &> {log}"
 
