@@ -1,4 +1,6 @@
-isabl_sample_id: ADT001
+isabl_sample_id: P-0046971-N01-WES
+
+bam: /juno/work/shah/isabl_data_lake/experiments/73/13/17313/data/SHAH_H002136_N01_01_WE01_12ef57b6c566d6db_P-0046971-N01-WES.bam
 
 intermediate_dir: intermediate
 

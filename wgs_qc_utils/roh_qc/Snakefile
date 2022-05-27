@@ -2,11 +2,11 @@ configfile: 'config.yaml'
 
 import os
 
-import shahlabdata.isabl
 from wgs.workflows.samtools_germline.tasks import generate_intervals
 
 isabl_sample_ids = [config['isabl_sample_id']]
 isabl_sample_id = isabl_sample_ids[0]
+input_bam = config['bam']
 gtf_filename = config['gtf_filename']
 
 intermediate_dir = config['intermediate_dir']
@@ -14,20 +14,8 @@ log_dir = config['log_dir']
 results_dir = config['results_dir']
 
 chromosomes = [str(x) for x in range(1, 23)] + ['X', 'Y']
-interval_size = 1e7 # 1e9 to cover all chroms
+interval_size = 1e9 # 1e9 to cover all chroms
 intervals = generate_intervals(config['reference'], chromosomes, interval_size)
-
-def get_input_bam(isabl_sample_id):
-    analyses = shahlabdata.isabl.get_results(
-        application='WGS-ALIGNMENT', 
-        sample_id=isabl_sample_id,
-    )
-    paths = analyses[analyses['result_type']=='bam']['result_filepath'].values
-    assert len(paths) == 1 # "the one true bam"
-    assert os.path.exists(paths[0]) # bam exists
-    assert os.path.exists(analyses[analyses['result_type']=='bai'] # bai exists
-                                   ['result_filepath'].values[0])
-    return paths[0]
 
 
 rule all:
@@ -36,7 +24,7 @@ rule all:
 
 rule samtools_germline:
     input: 
-        bam=get_input_bam(isabl_sample_id),
+        bam=input_bam,
         ref=config['reference']
     output: 
         os.path.join(intermediate_dir, 
