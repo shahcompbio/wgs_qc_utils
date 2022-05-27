@@ -1,9 +1,10 @@
 FROM python:3.8
 
-# docker build -t shahlab/classifycopynumber:latest .
-# docker push shahlab/classifycopynumber:latest
+# docker build -t shahlab/roh_qc:latest .
+# docker push shahlab/roh_qc:latest
 
 RUN apt-get update
 RUN apt-get install git build-essential -y
+RUN apt-get install samtools bcftools -y
 COPY requirements.txt /requirements.txt
 RUN pip install -r requirements.txt
