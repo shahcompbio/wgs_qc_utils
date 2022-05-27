@@ -8,5 +8,4 @@ RUN apt-get install git build-essential -y
 RUN apt-get install samtools bcftools -y
 COPY requirements.txt /requirements.txt
 RUN pip install -r requirements.txt
-COPY plot_roh.py /plot_roh.py
-ENTRYPOINT ["python","/plot_roh.py"]
+ADD plot_roh.py /plot_roh.py
