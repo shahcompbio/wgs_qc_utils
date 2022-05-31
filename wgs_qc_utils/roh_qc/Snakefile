@@ -99,7 +99,7 @@ rule plot_roh:
     singularity: "docker://soymintc/roh_qc:0.0.1"
     shell: 
         #"python /juno/work/shah/users/chois7/packages/wgs_qc_utils/wgs_qc_utils/roh_qc/docker/plot_roh.py " # TODO: fix to best practices
-        "plot_roh.py " 
+        "python /usr/bin/plot_roh.py " 
         f"--roh {input} --sample {isabl_sample_id} "
         "--pdf {output} &> {log}"
 
