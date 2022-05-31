@@ -75,7 +75,6 @@ PyYAML==6.0
 ratelimiter==1.2.0.post0
 requests==2.27.1
 retry==0.9.2
-scgenome @ git+https://github.com/shahcompbio/scgenome@0d50104c90745c4094ae94021948d1e5534734ee
 scikit-learn==1.0.2
 scipy==1.7.3
 seaborn==0.11.2

@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import click
+import re
 import logging
 import numpy as np
 import matplotlib
@@ -16,8 +17,6 @@ from wgs_qc_utils.plotter import roh_plotting
 from wgs_qc_utils.reader import read_roh
 
 from wgs_qc_utils.reader.ideogram import read_ideogram
-
-import scgenome.refgenome as refgenome
 
 
 def ideogram_plot(ideogram, axis):
@@ -70,9 +69,11 @@ def get_nrow_ncol_by_chromosomes(chromosomes):
 @click.option("--genome_version", default='hg19', show_default=True,
         help="select genome version")
 def plot_roh_on_ideogram(roh, genome_version, sample, pdf):
-    refgenome.set_genome_version(genome_version)
-    chromosomes = refgenome.info.chromosomes 
-    chromosomes = [chrom.lower() for chrom in chromosomes]
+    chromosome_versions = {'hg': [str(_) for _ in range(1, 23)] + ['x', 'y'],
+                           'mm': [str(_) for _ in range(1, 20)] + ['x', 'y'],}
+    chr_regex = re.search('[a-z]{2}[0-9]+')
+    assert re.search(chr_regex, genome_version) # genome_version in proper form
+    chromosomes = chromosome_versions[genome_version[:2]] # first 2 chars: hg19 -> hg
     roh = read_roh.read(roh)
     logging.debug(f'roh.head() = \n', roh.head())
     ideogram = read_ideogram.read()
