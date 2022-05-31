@@ -495,8 +495,8 @@ def breakpoint_qc(in_dir, sample, pdf, genome_version='hg19'):
     destruct_path = f'{in_dir}/{sample}_breakpoint_table.csv'
     lumpy_path = f'{in_dir}/{sample}_lumpy.vcf'
     svaba_path = f'{in_dir}/{sample}.svaba.somatic.sv.vcf.gz'
-    #gridss_path = f'{in_dir}/{sample}_gridss.vcf.gz'
-    gridss_path = f'{in_dir}/gridss.pass.test.vcf'
+    gridss_path = f'{in_dir}/{sample}_gridss.vcf.gz'
+    #gridss_path = f'{in_dir}/gridss.pass.test.vcf' # filtered small test file
 
     assert os.path.isfile(consensus_path)
     assert os.path.isfile(consensus_path)
