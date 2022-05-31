@@ -13,7 +13,8 @@ Run the following command:
 ```
 bsub -n 1 -J CLUSTER_JOB_NAME -o CLUSTER_LOG.out -e CLUSTER_LOG.err \
 module load singularity/3.6.2 && \
-singularity run docker://shahlab/breakpoint_qc:0.0.1 breakpoint_qc.py \
+singularity run docker://shahlab/breakpoint_qc:0.0.1 \
+/path/to/breakpoint_qc.py \
   --in_dir /path/to/input/directory \
   --sample ISABL_SAMPLE_ID \
   --pdf /path/to/output.pdf
