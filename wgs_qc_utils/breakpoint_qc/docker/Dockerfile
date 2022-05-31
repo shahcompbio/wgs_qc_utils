@@ -1,7 +1,7 @@
 FROM python:3.8
 
-# docker build -t shahlab/breakpoint_qc:0.0.1 .
-# docker push shahlab/breakpoint_qc:0.0.1
+# docker build -t shahcompbio/breakpoint_qc:0.0.1 .
+# docker push shahcompbio/breakpoint_qc:0.0.1
 
 RUN apt-get update
 RUN apt-get install git build-essential -y
