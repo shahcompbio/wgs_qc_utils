@@ -2,8 +2,6 @@ configfile: 'config.yaml'
 
 import os
 
-from wgs.workflows.samtools_germline.tasks import generate_intervals
-
 isabl_sample_ids = [config['isabl_sample_id']]
 isabl_sample_id = isabl_sample_ids[0]
 input_bam = config['bam']
@@ -12,6 +10,23 @@ gtf_filename = config['gtf_filename']
 intermediate_dir = config['intermediate_dir']
 log_dir = config['log_dir']
 results_dir = config['results_dir']
+
+def generate_intervals(ref, chromosomes, size=1000000): # FROM wgs package; bug workaround
+    fasta = pysam.FastaFile(ref)
+    lengths = fasta.lengths
+    names = fasta.references
+
+    intervals = []
+
+    for name, length in zip(names, lengths):
+        if name not in chromosomes:
+            continue
+        for i in range(int((length / size) + 1)):
+            start = str(int(i * size) + 1)
+            end = str(int((i + 1) * size))
+            intervals.append(name + "_" + start + "_" + end)
+
+    return intervals
 
 chromosomes = [str(x) for x in range(1, 23)] + ['X', 'Y']
 interval_size = 1e7 # 1e9 to cover all chroms
