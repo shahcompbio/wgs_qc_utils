@@ -1,0 +1,14 @@
+isabl_sample_id: P-0046971-N01-WES
+
+bam: /juno/work/shah/isabl_data_lake/experiments/73/13/17313/data/SHAH_H002136_N01_01_WE01_12ef57b6c566d6db_P-0046971-N01-WES.bam
+
+intermediate_dir: intermediate
+
+results_dir: results
+
+log_dir: log
+
+reference: /juno/work/shah/reference/genomes/GRCh37-lite/GRCh37-lite.fa
+
+gtf_filename: /juno/work/shah/reference/wgs_pipeline/Homo_sapiens.GRCh37.70.gtf
+
