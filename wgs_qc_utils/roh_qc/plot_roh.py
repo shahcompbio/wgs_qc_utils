@@ -71,7 +71,7 @@ def get_nrow_ncol_by_chromosomes(chromosomes):
 def plot_roh_on_ideogram(roh, genome_version, sample, pdf):
     chromosome_versions = {'hg': [str(_) for _ in range(1, 23)] + ['x', 'y'],
                            'mm': [str(_) for _ in range(1, 20)] + ['x', 'y'],}
-    chr_regex = re.search('[a-z]{2}[0-9]+')
+    chr_regex = re.compile('[a-z]{2}[0-9]+')
     assert re.search(chr_regex, genome_version) # genome_version in proper form
     chromosomes = chromosome_versions[genome_version[:2]] # first 2 chars: hg19 -> hg
     roh = read_roh.read(roh)
