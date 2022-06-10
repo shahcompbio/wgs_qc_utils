@@ -1,7 +1,7 @@
 FROM python:3.8
 
-# docker build -t shahcompbio/roh_qc:0.0.2 .
-# docker push shahcompbio/roh_qc:0.0.2
+# docker build -t quay.io/soymintc/roh_qc . 
+# docker push quay.io/soymintc/roh_qc
 
 RUN apt-get update
 RUN apt-get install git build-essential -y
