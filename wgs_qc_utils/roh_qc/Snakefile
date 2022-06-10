@@ -69,7 +69,7 @@ rule samtools_germline:
             'samtools_germline.{sample}.{interval}.vcf.gz.log')
     params:
         region = lambda wc: "{}:{}-{}".format(*wc.interval.split('_'))
-    singularity: "docker://soymintc/roh_qc:0.0.1"
+    singularity: "docker://shahcompbio/roh_qc:0.0.2"
     shell: 
         "samtools mpileup -ugf {input.ref} -Q 20 -q 10 "
         "-r {params.region} {input.bam} 2> {log} | "
@@ -84,7 +84,7 @@ rule bcftools_concat:
         os.path.join(intermediate_dir, f'samtools_germline.vcf.gz')
     log: 
         os.path.join(log_dir, f'samtools_germline.vcf.log')
-    singularity: "docker://soymintc/roh_qc:0.0.1"
+    singularity: "docker://shahcompbio/roh_qc:0.0.2"
     shell: 
         "bcftools concat -O z -o {output} "
         "{input} 2> {log}"
@@ -96,7 +96,7 @@ rule bcftools_sort:
         os.path.join(intermediate_dir, f'samtools_germline.sorted.vcf.gz')
     log: 
         os.path.join(log_dir, f'samtools_germline.sorted.vcf.log')
-    singularity: "docker://soymintc/roh_qc:0.0.1"
+    singularity: "docker://shahcompbio/roh_qc:0.0.2"
     shell: 
         "bcftools sort -m 4G -O z -o {output} -T tmp {input} 2> {log}"
 
@@ -107,7 +107,7 @@ rule bcftools_roh:
         os.path.join(results_dir, f'samtools_germline.roh.tsv')
     log: 
         os.path.join(log_dir, f'samtools_germline.roh.tsv.log')
-    singularity: "docker://soymintc/roh_qc:0.0.1"
+    singularity: "docker://shahcompbio/roh_qc:0.0.2"
     shell: 
         "bcftools roh -G30 --AF-dflt 0.4 {input} "
         "> {output} 2> {log}"
@@ -119,7 +119,7 @@ rule plot_roh:
         os.path.join(results_dir, f'roh_qc.pdf')
     log: 
         os.path.join(log_dir, f'roh_qc.log')
-    singularity: "docker://soymintc/roh_qc:0.0.1"
+    singularity: "docker://shahcompbio/roh_qc:0.0.2"
     shell: 
         "python /juno/work/shah/users/chois7/packages/wgs_qc_utils/wgs_qc_utils/roh_qc/plot_roh.py " 
         #"python /usr/bin/plot_roh.py " 
