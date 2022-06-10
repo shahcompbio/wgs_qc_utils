@@ -55,7 +55,7 @@ intervals = generate_intervals(config['reference'], chromosomes, interval_size)
 
 rule all:
     input: 
-        os.path.join(results_dir, f'roh_qc.pdf'),
+        os.path.join(results_dir, 'roh_qc.pdf'),
 
 rule samtools_germline:
     input: 
@@ -63,10 +63,10 @@ rule samtools_germline:
         ref=config['reference']
     output: 
         os.path.join(intermediate_dir, 
-            'samtools_germline.{sample}.{interval}.vcf.gz')
+            'samtools_germline.{interval}.vcf.gz')
     log: 
         os.path.join(log_dir, 
-            'samtools_germline.{sample}.{interval}.vcf.gz.log')
+            'samtools_germline.{interval}.vcf.gz.log')
     params:
         region = lambda wc: "{}:{}-{}".format(*wc.interval.split('_'))
     singularity: "docker://shahcompbio/roh_qc:0.0.2"
@@ -78,12 +78,12 @@ rule samtools_germline:
 rule bcftools_concat:
     input:
         expand(os.path.join(intermediate_dir, 
-            'samtools_germline.{sample}.{interval}.vcf.gz'),
+            'samtools_germline.{interval}.vcf.gz'),
             interval=intervals)
     output:
-        os.path.join(intermediate_dir, f'samtools_germline.vcf.gz')
+        os.path.join(intermediate_dir, 'samtools_germline.vcf.gz')
     log: 
-        os.path.join(log_dir, f'samtools_germline.vcf.log')
+        os.path.join(log_dir, 'samtools_germline.vcf.log')
     singularity: "docker://shahcompbio/roh_qc:0.0.2"
     shell: 
         "bcftools concat -O z -o {output} "
@@ -91,22 +91,22 @@ rule bcftools_concat:
 
 rule bcftools_sort:
     input:
-        os.path.join(intermediate_dir, f'samtools_germline.vcf.gz')
+        os.path.join(intermediate_dir, 'samtools_germline.vcf.gz')
     output:
-        os.path.join(intermediate_dir, f'samtools_germline.sorted.vcf.gz')
+        os.path.join(intermediate_dir, 'samtools_germline.sorted.vcf.gz')
     log: 
-        os.path.join(log_dir, f'samtools_germline.sorted.vcf.log')
+        os.path.join(log_dir, 'samtools_germline.sorted.vcf.log')
     singularity: "docker://shahcompbio/roh_qc:0.0.2"
     shell: 
         "bcftools sort -m 4G -O z -o {output} -T tmp {input} 2> {log}"
 
 rule bcftools_roh:
     input:
-        os.path.join(intermediate_dir, f'samtools_germline.sorted.vcf.gz')
+        os.path.join(intermediate_dir, 'samtools_germline.sorted.vcf.gz')
     output:
-        os.path.join(results_dir, f'samtools_germline.roh.tsv')
+        os.path.join(results_dir, 'samtools_germline.roh.tsv')
     log: 
-        os.path.join(log_dir, f'samtools_germline.roh.tsv.log')
+        os.path.join(log_dir, 'samtools_germline.roh.tsv.log')
     singularity: "docker://shahcompbio/roh_qc:0.0.2"
     shell: 
         "bcftools roh -G30 --AF-dflt 0.4 {input} "
@@ -114,11 +114,11 @@ rule bcftools_roh:
 
 rule plot_roh:
     input:
-        os.path.join(results_dir, f'samtools_germline.roh.tsv')
+        os.path.join(results_dir, 'samtools_germline.roh.tsv')
     output:
-        os.path.join(results_dir, f'roh_qc.pdf')
+        os.path.join(results_dir, 'roh_qc.pdf')
     log: 
-        os.path.join(log_dir, f'roh_qc.log')
+        os.path.join(log_dir, 'roh_qc.log')
     singularity: "docker://shahcompbio/roh_qc:0.0.2"
     shell: 
         "python /juno/work/shah/users/chois7/packages/wgs_qc_utils/wgs_qc_utils/roh_qc/plot_roh.py " 
