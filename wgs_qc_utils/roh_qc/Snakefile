@@ -15,7 +15,7 @@ class Fasta:
     def __init__(self, ref_path):
         self.fasta = ref_path
         self.fai = self.fasta + '.fai'
-        self.names = []
+        self.references = []
         self.lengths = []
         assert os.path.isfile(self.fasta)
         assert os.path.isfile(self.fai)
@@ -26,11 +26,11 @@ class Fasta:
     def process_fai(self, only_canonical=True):
         for line in open(self.fai):
             field = line.rstrip().split('\t')
-            name, length, cumlen, _a, _b = field
-            if only_canonical and (name == 'MT' or 
-                                   name.startswith('GL')):
+            reference, length, cumlen, _a, _b = field
+            if only_canonical and (reference == 'MT' or 
+                                   reference.startswith('GL')):
                 continue
-            self.names.append(name)
+            self.references.append(reference)
             self.lengths.append(int(length))
 
 def generate_intervals(ref, chromosomes, size=1000000): # FROM wgs package; bug workaround
