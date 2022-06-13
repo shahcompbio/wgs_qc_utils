@@ -126,6 +126,6 @@ rule plot_roh:
     shell: 
         "python /juno/work/shah/users/chois7/packages/wgs_qc_utils/wgs_qc_utils/roh_qc/plot_roh.py " 
         f"--roh {input} "
-        f"--sample {params.sample} "
+        "--sample {params.sample} "
         "--pdf {output} &> {log}"
 
