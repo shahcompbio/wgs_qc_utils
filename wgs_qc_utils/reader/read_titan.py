@@ -20,7 +20,9 @@ def read(copy_number):
              "#BB0000", "#CC0000", "#DD0000", "#EE0000"] + ["#FF0000"] * n_extra
 
     read["color"] = read.TITANstate.apply(lambda state: colors[state])
-    read["Chr"] = read.Chr.str.lower()
+    read["Chr"] = (read.Chr
+            .str.replace('chr', '')
+            .str.lower())
     read.rename(columns={"Chr":"Chrom"}, inplace=True)
 
     return read
