@@ -6,7 +6,9 @@ def read(remixt):
     cnv_data = pd.read_csv(remixt, sep="\t", converters={'chromosome': str})
 
     cnv_data["total_raw_e"] = cnv_data.major_raw_e + cnv_data.minor_raw_e
-    cnv_data["chromosome"] = cnv_data.chromosome.str.lower()
+    cnv_data["chromosome"] = (cnv_data.chromosome
+            .str.replace('chr', '')
+            .str.lower())
     cnv_data.rename(columns={"chromosome":"chrom"}, inplace=True)
     
     meta = os.path.join(os.path.dirname(remixt), "meta.yaml")
